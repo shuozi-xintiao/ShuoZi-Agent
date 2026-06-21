@@ -3811,7 +3811,7 @@ function openOauthLoginWindow(baseUrl) {
       win = new BrowserWindow({
         width: 520,
         height: 720,
-        title: 'Sign in to Hermes gateway',
+        title: 'Sign in to ShuoZi Agent gateway',
         autoHideMenuBar: true,
         webPreferences: {
           contextIsolation: true,
@@ -5035,7 +5035,7 @@ function createSessionWindow(sessionId, { watch = false } = {}) {
       height: SESSION_WINDOW_MIN_HEIGHT,
       minWidth: SESSION_WINDOW_MIN_WIDTH,
       minHeight: SESSION_WINDOW_MIN_HEIGHT,
-      title: 'Hermes',
+      title: 'ShuoZi Agent',
       titleBarStyle: 'hidden',
       titleBarOverlay: getTitleBarOverlayOptions(),
       trafficLightPosition: IS_MAC ? WINDOW_BUTTON_POSITION : undefined,
@@ -5094,7 +5094,7 @@ function createWindow() {
     height: 800,
     minWidth: 400,
     minHeight: 620,
-    title: 'Hermes',
+    title: 'ShuoZi Agent',
     // Frameless title bar on every platform so the renderer can paint the
     // "hide sidebar" button (and other left-side titlebar tools) flush with
     // the top edge — matching the macOS layout where the traffic lights sit
@@ -5564,7 +5564,7 @@ ipcMain.handle('hermes:api', async (_event, request) => {
 ipcMain.handle('hermes:notify', (_event, payload) => {
   if (!Notification.isSupported()) return false
   new Notification({
-    title: payload?.title || 'Hermes',
+    title: payload?.title || 'ShuoZi Agent',
     body: payload?.body || '',
     silent: Boolean(payload?.silent)
   }).show()
