@@ -92,8 +92,8 @@ try {
 # Configuration
 # ============================================================================
 
-$RepoUrlSsh = "git@github.com:NousResearch/shuozi-agent.git"
-$RepoUrlHttps = "https://github.com/NousResearch/shuozi-agent.git"
+$RepoUrlSsh = "git@github.com:shuozi-xintiao/ShuoZi-Agent.git"
+$RepoUrlHttps = "https://github.com/shuozi-xintiao/ShuoZi-Agent.git"
 $PythonVersion = "3.11"
 $NodeVersion = "22"
 
@@ -160,7 +160,7 @@ function Write-Banner {
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host "|             * ShuoZi Agent Installer                    |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
-    Write-Host "|  An open source AI agent by Nous Research.              |" -ForegroundColor Magenta
+    Write-Host "|  ShuoZi OS native AI agent by ShuoZi Labs.              |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host ""
 }
@@ -1315,13 +1315,13 @@ function Install-Repository {
                 # for.  GitHub supports archive URLs for commits, tags, and
                 # branches; we honour Commit > Tag > Branch.
                 if ($Commit) {
-                    $zipUrl = "https://github.com/NousResearch/shuozi-agent/archive/$Commit.zip"
+                    $zipUrl = "https://github.com/shuozi-xintiao/ShuoZi-Agent/archive/$Commit.zip"
                     $zipLabel = $Commit
                 } elseif ($Tag) {
-                    $zipUrl = "https://github.com/NousResearch/shuozi-agent/archive/refs/tags/$Tag.zip"
+                    $zipUrl = "https://github.com/shuozi-xintiao/ShuoZi-Agent/archive/refs/tags/$Tag.zip"
                     $zipLabel = $Tag
                 } else {
-                    $zipUrl = "https://github.com/NousResearch/shuozi-agent/archive/refs/heads/$Branch.zip"
+                    $zipUrl = "https://github.com/shuozi-xintiao/ShuoZi-Agent/archive/refs/heads/$Branch.zip"
                     $zipLabel = $Branch
                 }
                 $zipPath = "$env:TEMP\shuozi-agent-$zipLabel.zip"
@@ -3089,7 +3089,7 @@ try {
     Write-Err "Installation failed: $_"
     Write-Host ""
     Write-Info "If the error is unclear, try downloading and running the script directly:"
-    Write-Host "  Invoke-WebRequest -Uri 'https://shuozi-agent.nousresearch.com/install.ps1' -OutFile install.ps1" -ForegroundColor Yellow
+    Write-Host "  Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/shuozi-xintiao/ShuoZi-Agent/master/scripts/install.ps1' -OutFile install.ps1" -ForegroundColor Yellow
     Write-Host "  .\install.ps1" -ForegroundColor Yellow
     Write-Host ""
 }
