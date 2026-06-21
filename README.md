@@ -1,5 +1,5 @@
 <p align="center">
-  <h1>硕子 Agent &mdash; ShuoZi Agent</h1>
+  <h1>硕兹 Agent &mdash; ShuoZi Agent</h1>
   <p>ShuoZi OS 原生 AI 智能层 &bull; Built by ShuoZi Labs</p>
 </p>
 
