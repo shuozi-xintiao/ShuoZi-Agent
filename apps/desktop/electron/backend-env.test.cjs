@@ -10,7 +10,7 @@ const {
   pathEnvKey
 } = require('./backend-env.cjs')
 
-test('desktop backend PATH adds Hermes-managed bins and missing POSIX sane entries', () => {
+test('desktop backend PATH adds ShuoZi-managed bins and missing POSIX sane entries', () => {
   const result = buildDesktopBackendPath({
     shuoziHome: '/Users/test/.shuozi',
     venvRoot: '/Users/test/.shuozi/shuozi-agent/venv',

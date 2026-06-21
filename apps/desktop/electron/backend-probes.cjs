@@ -2,7 +2,7 @@
  * backend-probes.cjs
  *
  * Cheap "does this candidate backend actually work" checks used by
- * resolveHermesBackend (main.cjs). The resolver walks a ladder of
+ * resolveShuoZiBackend (main.cjs). The resolver walks a ladder of
  * candidates -- bootstrap marker, `shuozi` on PATH, system Python with
  * shuozi_cli installed -- and historically returned the first candidate
  * whose binary existed on disk. That assumption breaks when a user has
@@ -23,7 +23,7 @@
  *   - 5s timeout (a hung interpreter beats forever, but we still give
  *     slow disks / cold caches room to breathe)
  *   - stdio ignored (we only care about exit code; stdout/stderr are
- *     not surfaced to the user, just to recentHermesLog for forensics
+ *     not surfaced to the user, just to recentShuoZiLog for forensics
  *     via the caller's catch block if it chooses)
  *   - any throw -> false (never propagate -- resolver wants a boolean)
  *
@@ -40,7 +40,7 @@ const PROBE_TIMEOUT_MS = 5000
  * Return true iff `python -c "import shuozi_cli"` exits 0.
  *
  * Used to gate the "fallback to system Python with shuozi_cli installed"
- * rung of resolveHermesBackend. Without this, a system Python 3.11-3.13
+ * rung of resolveShuoZiBackend. Without this, a system Python 3.11-3.13
  * registered in PEP 514 makes findSystemPython() succeed regardless of
  * whether shuozi_cli has actually been pip-installed into its
  * site-packages -- and the resolver returns a backend that immediately
@@ -81,7 +81,7 @@ function canImportShuoziCli(pythonPath) {
  * @param {boolean} [opts.shell] - Whether to run through a shell. For
  *   .cmd/.bat shims on Windows execFileSync needs shell:true to find
  *   the cmd interpreter; mirrors the same flag isCommandScript() drives
- *   in resolveHermesBackend.
+ *   in resolveShuoZiBackend.
  * @returns {boolean}
  */
 function verifyShuoziCli(shuoziCommand, opts = {}) {

@@ -56,12 +56,12 @@ test('mode predicates classify what each mode removes', () => {
 
 test('resolveRemovableAppPath finds the .app bundle on macOS', () => {
   assert.equal(
-    resolveRemovableAppPath('/Applications/Hermes.app/Contents/MacOS/Hermes', 'darwin'),
-    '/Applications/Hermes.app'
+    resolveRemovableAppPath('/Applications/ShuoZi.app/Contents/MacOS/ShuoZi', 'darwin'),
+    '/Applications/ShuoZi.app'
   )
   assert.equal(
-    resolveRemovableAppPath('/Users/x/Applications/Hermes.app/Contents/MacOS/Hermes', 'darwin'),
-    '/Users/x/Applications/Hermes.app'
+    resolveRemovableAppPath('/Users/x/Applications/ShuoZi.app/Contents/MacOS/ShuoZi', 'darwin'),
+    '/Users/x/Applications/ShuoZi.app'
   )
 })
 
@@ -80,23 +80,23 @@ test('resolveRemovableAppPath: dev-run .app resolves (safety is shouldRemoveAppB
 
 test('resolveRemovableAppPath finds the install dir on Windows', () => {
   assert.equal(
-    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\Programs\\Hermes\\Hermes.exe', 'win32'),
-    'C:\\Users\\x\\AppData\\Local\\Programs\\Hermes'
+    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\Programs\\ShuoZi\\ShuoZi.exe', 'win32'),
+    'C:\\Users\\x\\AppData\\Local\\Programs\\ShuoZi'
   )
   assert.equal(
-    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\shuozi-desktop\\Hermes.exe', 'win32'),
+    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\shuozi-desktop\\ShuoZi.exe', 'win32'),
     'C:\\Users\\x\\AppData\\Local\\shuozi-desktop'
   )
 })
 
 test('resolveRemovableAppPath returns null for an unrecognized Windows dir', () => {
-  assert.equal(resolveRemovableAppPath('C:\\Temp\\foo\\Hermes.exe', 'win32'), null)
+  assert.equal(resolveRemovableAppPath('C:\\Temp\\foo\\ShuoZi.exe', 'win32'), null)
 })
 
 test('resolveRemovableAppPath uses APPIMAGE on Linux when set', () => {
   assert.equal(
-    resolveRemovableAppPath('/tmp/.mount_HermesXXXX/shuozi', 'linux', { APPIMAGE: '/home/x/Apps/Hermes.AppImage' }),
-    '/home/x/Apps/Hermes.AppImage'
+    resolveRemovableAppPath('/tmp/.mount_ShuoZiXXXX/shuozi', 'linux', { APPIMAGE: '/home/x/Apps/ShuoZi.AppImage' }),
+    '/home/x/Apps/ShuoZi.AppImage'
   )
 })
 
@@ -117,8 +117,8 @@ test('resolveRemovableAppPath returns null for an empty exe path', () => {
 // --- shouldRemoveAppBundle ---
 
 test('shouldRemoveAppBundle requires packaged AND a resolved path', () => {
-  assert.equal(shouldRemoveAppBundle(true, '/Applications/Hermes.app'), true)
-  assert.equal(shouldRemoveAppBundle(false, '/Applications/Hermes.app'), false)
+  assert.equal(shouldRemoveAppBundle(true, '/Applications/ShuoZi.app'), true)
+  assert.equal(shouldRemoveAppBundle(false, '/Applications/ShuoZi.app'), false)
   assert.equal(shouldRemoveAppBundle(true, null), false)
   assert.equal(shouldRemoveAppBundle(false, null), false)
 })
@@ -212,7 +212,7 @@ test('buildWindowsCleanupScript waits (bounded) for PID, runs uninstall, rmdir b
     pythonPath: 'C:\\shuozi',
     agentRoot: 'C:\\shuozi',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'full'],
-    appPath: 'C:\\Users\\x\\AppData\\Local\\Programs\\Hermes',
+    appPath: 'C:\\Users\\x\\AppData\\Local\\Programs\\ShuoZi',
     shuoziHome: 'C:\\Users\\x\\AppData\\Local\\shuozi'
   })
   assert.match(script, /@echo off/)
@@ -226,7 +226,7 @@ test('buildWindowsCleanupScript waits (bounded) for PID, runs uninstall, rmdir b
   assert.doesNotMatch(script, /find "%PID%"/) // the old substring-prone form is gone
   // Removal is a retry loop (Windows releases dir handles lazily).
   assert.match(script, /:rmloop/)
-  assert.match(script, /rmdir \/s \/q "C:\\Users\\x\\AppData\\Local\\Programs\\Hermes" >nul 2>&1/)
+  assert.match(script, /rmdir \/s \/q "C:\\Users\\x\\AppData\\Local\\Programs\\ShuoZi" >nul 2>&1/)
   assert.match(script, /if %tries% geq 10 goto rmdone/)
   assert.match(script, /del "%~f0"/)
 })
