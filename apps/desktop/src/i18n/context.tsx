@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getShuoziConfigRecord, type ShuoziConfigRecord, saveShuoziConfig } from '@/hermes'
+import { getShuoziConfigRecord, type ShuoziConfigRecord, saveShuoziConfig } from '@/shuozi'
 
 import { TRANSLATIONS } from './catalog'
 import { DEFAULT_LOCALE, localeConfigValue, normalizeLocale } from './languages'
@@ -16,14 +16,14 @@ export interface I18nConfigClient {
 
 const defaultConfigClient: I18nConfigClient = {
   getConfig: () => {
-    if (typeof window === 'undefined' || !window.hermesDesktop?.api) {
+    if (typeof window === 'undefined' || !window.shuoziDesktop?.api) {
       return Promise.resolve({})
     }
 
     return getShuoziConfigRecord()
   },
   saveConfig: config => {
-    if (typeof window === 'undefined' || !window.hermesDesktop?.api) {
+    if (typeof window === 'undefined' || !window.shuoziDesktop?.api) {
       return Promise.resolve({ ok: true })
     }
 

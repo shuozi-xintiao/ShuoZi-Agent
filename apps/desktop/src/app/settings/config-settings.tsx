@@ -12,11 +12,11 @@ import {
   getShuoziConfigRecord,
   getShuoziConfigSchema,
   saveShuoziConfig
-} from '@/hermes'
+} from '@/shuozi'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { notify, notifyError } from '@/store/notifications'
-import type { ConfigFieldSchema, ShuoziConfigRecord } from '@/types/hermes'
+import type { ConfigFieldSchema, ShuoziConfigRecord } from '@/types/shuozi'
 
 import { CONTROL_TEXT, EMPTY_SELECT_VALUE, FIELD_DESCRIPTIONS, FIELD_LABELS, SECTIONS } from './constants'
 import { fieldCopyForSchemaKey } from './field-copy'

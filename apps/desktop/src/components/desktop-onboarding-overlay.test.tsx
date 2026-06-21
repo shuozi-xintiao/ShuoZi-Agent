@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { $desktopOnboarding, type DesktopOnboardingState, type OnboardingContext } from '@/store/onboarding'
-import type { OAuthProvider } from '@/types/hermes'
+import type { OAuthProvider } from '@/types/shuozi'
 
 import { Picker } from './desktop-onboarding-overlay'
 
@@ -89,7 +89,7 @@ describe('onboarding Picker', () => {
     fireEvent.click(skip)
 
     expect($desktopOnboarding.get().firstRunSkipped).toBe(true)
-    expect(window.localStorage.getItem('hermes-onboarding-skipped-v1')).toBe('1')
+    expect(window.localStorage.getItem('shuozi-onboarding-skipped-v1')).toBe('1')
   })
 
   it('hides "choose later" in manual (add-provider) mode', () => {

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { uniqueCwds, type WorktreeResolver } from '@/app/chat/sidebar/workspace-groups'
 import type { HermesWorktreeInfo } from '@/global'
-import type { SessionInfo } from '@/hermes'
+import type { SessionInfo } from '@/shuozi'
 import { desktopFsCacheKey, desktopWorktrees } from '@/lib/desktop-fs'
 
 type WorktreeMap = Record<string, HermesWorktreeInfo | null>

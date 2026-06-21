@@ -1,4 +1,4 @@
-import type { ShuoziGateway } from '@/hermes'
+import type { ShuoziGateway } from '@/shuozi'
 import type { ComposerAttachment } from '@/store/composer'
 
 import type { DroppedFile } from '../hooks/use-composer-actions'

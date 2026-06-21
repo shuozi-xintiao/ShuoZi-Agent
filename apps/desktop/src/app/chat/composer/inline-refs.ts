@@ -14,7 +14,7 @@ import {
 export type InlineRefInput = string | { kind: string; label?: string; value: string }
 
 /** MIME for an in-app session drag (sidebar row → composer). */
-export const SHUOZI_SESSION_MIME = 'application/x-hermes-session'
+export const SHUOZI_SESSION_MIME = 'application/x-shuozi-session'
 
 export interface SessionDragPayload {
   id: string

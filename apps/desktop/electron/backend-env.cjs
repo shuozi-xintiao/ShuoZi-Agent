@@ -50,25 +50,25 @@ function appendUniquePathEntries(entries, { delimiter = path.delimiter } = {}) {
 }
 
 function buildDesktopBackendPath({
-  hermesHome,
+  shuoziHome,
   venvRoot,
   currentPath = '',
   platform = process.platform,
   pathModule = pathModuleForPlatform(platform)
 } = {}) {
   const delimiter = delimiterForPlatform(platform)
-  const hermesNodeBin = hermesHome ? pathModule.join(hermesHome, 'node', 'bin') : null
+  const shuoziNodeBin = shuoziHome ? pathModule.join(shuoziHome, 'node', 'bin') : null
   const venvBin = venvRoot ? pathModule.join(venvRoot, platform === 'win32' ? 'Scripts' : 'bin') : null
   const saneEntries = platform === 'win32' ? [] : POSIX_SANE_PATH_ENTRIES
 
   return appendUniquePathEntries(
-    [hermesNodeBin, venvBin, currentPath, saneEntries],
+    [shuoziNodeBin, venvBin, currentPath, saneEntries],
     { delimiter }
   )
 }
 
 function buildDesktopBackendEnv({
-  hermesHome,
+  shuoziHome,
   pythonPathEntries = [],
   venvRoot,
   currentEnv = process.env,
@@ -82,7 +82,7 @@ function buildDesktopBackendEnv({
   return {
     PYTHONPATH: appendUniquePathEntries([...pythonPathEntries, currentPythonPath], { delimiter }),
     [key]: buildDesktopBackendPath({
-      hermesHome,
+      shuoziHome,
       venvRoot,
       currentPath: currentPathValue(currentEnv, platform),
       platform,

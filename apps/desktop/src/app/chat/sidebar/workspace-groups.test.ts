@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { HermesWorktreeInfo } from '@/global'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo } from '@/types/shuozi'
 
 import { uniqueCwds, workspaceGroupsFor, workspaceTreeFor, type WorktreeResolver } from './workspace-groups'
 

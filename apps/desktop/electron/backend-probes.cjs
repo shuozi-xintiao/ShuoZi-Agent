@@ -3,7 +3,7 @@
  *
  * Cheap "does this candidate backend actually work" checks used by
  * resolveHermesBackend (main.cjs). The resolver walks a ladder of
- * candidates -- bootstrap marker, `hermes` on PATH, system Python with
+ * candidates -- bootstrap marker, `shuozi` on PATH, system Python with
  * shuozi_cli installed -- and historically returned the first candidate
  * whose binary existed on disk. That assumption breaks when a user has
  * a pre-installed Python 3.11-3.13 (so findSystemPython() returns a
@@ -64,18 +64,18 @@ function canImportShuoziCli(pythonPath) {
 }
 
 /**
- * Return true iff `<hermesCommand> --version` exits 0.
+ * Return true iff `<shuoziCommand> --version` exits 0.
  *
- * Used to gate the "existing `hermes` on PATH" rung. Without this, a
- * stale hermes.cmd shim left behind by an uninstalled pip install (or
- * a half-built venv whose `hermes` entry-point points at a deleted
+ * Used to gate the "existing `shuozi` on PATH" rung. Without this, a
+ * stale shuozi.cmd shim left behind by an uninstalled pip install (or
+ * a half-built venv whose `shuozi` entry-point points at a deleted
  * Python) survives findOnPath() and gets selected as the backend.
  *
  * We intentionally avoid invoking the command with the dashboard args
  * here -- `--version` is the cheapest "is this binary alive" smoke
  * test that every shuozi_cli entry-point has supported since 0.1.
  *
- * @param {string} hermesCommand - Resolved absolute path to a hermes
+ * @param {string} shuoziCommand - Resolved absolute path to a shuozi
  *   executable (or an interpreter+script wrapper).
  * @param {object} [opts]
  * @param {boolean} [opts.shell] - Whether to run through a shell. For
@@ -84,10 +84,10 @@ function canImportShuoziCli(pythonPath) {
  *   in resolveHermesBackend.
  * @returns {boolean}
  */
-function verifyShuoziCli(hermesCommand, opts = {}) {
-  if (!hermesCommand) return false
+function verifyShuoziCli(shuoziCommand, opts = {}) {
+  if (!shuoziCommand) return false
   try {
-    execFileSync(hermesCommand, ['--version'], {
+    execFileSync(shuoziCommand, ['--version'], {
       stdio: 'ignore',
       timeout: PROBE_TIMEOUT_MS,
       shell: Boolean(opts.shell),

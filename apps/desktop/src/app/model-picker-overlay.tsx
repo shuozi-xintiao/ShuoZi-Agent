@@ -2,7 +2,7 @@ import { useStore } from '@nanostores/react'
 import type * as React from 'react'
 
 import { ModelPickerDialog } from '@/components/model-picker'
-import type { ShuoziGateway } from '@/hermes'
+import type { ShuoziGateway } from '@/shuozi'
 import {
   $activeSessionId,
   $currentModel,

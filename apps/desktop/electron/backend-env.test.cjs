@@ -12,7 +12,7 @@ const {
 
 test('desktop backend PATH adds Hermes-managed bins and missing POSIX sane entries', () => {
   const result = buildDesktopBackendPath({
-    hermesHome: '/Users/test/.hermes',
+    shuoziHome: '/Users/test/.shuozi',
     venvRoot: '/Users/test/.shuozi/shuozi-agent/venv',
     currentPath: '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin',
     platform: 'darwin',
@@ -33,7 +33,7 @@ test('desktop backend PATH adds Hermes-managed bins and missing POSIX sane entri
 
 test('desktop backend PATH preserves first occurrence and avoids duplicates', () => {
   const result = buildDesktopBackendPath({
-    hermesHome: '/Users/test/.hermes',
+    shuoziHome: '/Users/test/.shuozi',
     venvRoot: '/Users/test/.shuozi/shuozi-agent/venv',
     currentPath: '/opt/homebrew/bin:/usr/bin:/opt/homebrew/bin:/bin',
     platform: 'darwin',
@@ -50,7 +50,7 @@ test('desktop backend PATH preserves first occurrence and avoids duplicates', ()
 
 test('buildDesktopBackendEnv extends PYTHONPATH and backend PATH together', () => {
   const env = buildDesktopBackendEnv({
-    hermesHome: '/Users/test/.hermes',
+    shuoziHome: '/Users/test/.shuozi',
     pythonPathEntries: ['/repo/shuozi-agent'],
     venvRoot: '/Users/test/.shuozi/shuozi-agent/venv',
     currentEnv: {
@@ -68,9 +68,9 @@ test('buildDesktopBackendEnv extends PYTHONPATH and backend PATH together', () =
 
 test('Windows PATH casing and delimiter are preserved without POSIX sane entries', () => {
   const env = buildDesktopBackendEnv({
-    hermesHome: 'C:\\Users\\test\\AppData\\Local\\hermes',
+    shuoziHome: 'C:\\Users\\test\\AppData\\Local\\shuozi',
     pythonPathEntries: ['C:\\repo\\shuozi-agent'],
-    venvRoot: 'C:\\Users\\test\\AppData\\Local\\hermes\\shuozi-agent\\venv',
+    venvRoot: 'C:\\Users\\test\\AppData\\Local\\shuozi\\shuozi-agent\\venv',
     currentEnv: {
       Path: 'C:\\Windows\\System32;C:\\Windows',
       PYTHONPATH: 'C:\\existing\\pythonpath'
@@ -81,7 +81,7 @@ test('Windows PATH casing and delimiter are preserved without POSIX sane entries
 
   assert.equal(pathEnvKey({ Path: 'x' }, 'win32'), 'Path')
   assert.equal(env.PATH, undefined)
-  assert.ok(env.Path.startsWith('C:\\Users\\test\\AppData\\Local\\hermes\\node\\bin;'))
+  assert.ok(env.Path.startsWith('C:\\Users\\test\\AppData\\Local\\shuozi\\node\\bin;'))
   assert.ok(env.Path.includes('\\venv\\Scripts;'))
   assert.ok(env.Path.includes(';C:\\Windows\\System32;C:\\Windows'))
   assert.equal(env.Path.includes('/opt/homebrew/bin'), false)

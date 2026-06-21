@@ -84,8 +84,8 @@ test('resolveRemovableAppPath finds the install dir on Windows', () => {
     'C:\\Users\\x\\AppData\\Local\\Programs\\Hermes'
   )
   assert.equal(
-    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\hermes-desktop\\Hermes.exe', 'win32'),
-    'C:\\Users\\x\\AppData\\Local\\hermes-desktop'
+    resolveRemovableAppPath('C:\\Users\\x\\AppData\\Local\\shuozi-desktop\\Hermes.exe', 'win32'),
+    'C:\\Users\\x\\AppData\\Local\\shuozi-desktop'
   )
 })
 
@@ -95,18 +95,18 @@ test('resolveRemovableAppPath returns null for an unrecognized Windows dir', () 
 
 test('resolveRemovableAppPath uses APPIMAGE on Linux when set', () => {
   assert.equal(
-    resolveRemovableAppPath('/tmp/.mount_HermesXXXX/hermes', 'linux', { APPIMAGE: '/home/x/Apps/Hermes.AppImage' }),
+    resolveRemovableAppPath('/tmp/.mount_HermesXXXX/shuozi', 'linux', { APPIMAGE: '/home/x/Apps/Hermes.AppImage' }),
     '/home/x/Apps/Hermes.AppImage'
   )
 })
 
 test('resolveRemovableAppPath finds the unpacked dir on Linux', () => {
   assert.equal(
-    resolveRemovableAppPath('/opt/hermes/linux-unpacked/hermes', 'linux', {}),
-    '/opt/hermes/linux-unpacked'
+    resolveRemovableAppPath('/opt/shuozi/linux-unpacked/shuozi', 'linux', {}),
+    '/opt/shuozi/linux-unpacked'
   )
   // A system-package install (/usr/bin) → null, left to apt/dnf.
-  assert.equal(resolveRemovableAppPath('/usr/bin/hermes', 'linux', {}), null)
+  assert.equal(resolveRemovableAppPath('/usr/bin/shuozi', 'linux', {}), null)
 })
 
 test('resolveRemovableAppPath returns null for an empty exe path', () => {
@@ -132,8 +132,8 @@ test('buildPosixCleanupScript waits for the PID, runs the uninstall module, remo
     pythonPath: null,
     agentRoot: '/home/x/.shuozi/shuozi-agent',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'gui'],
-    appPath: '/opt/hermes/linux-unpacked',
-    hermesHome: '/home/x/.hermes'
+    appPath: '/opt/shuozi/linux-unpacked',
+    shuoziHome: '/home/x/.shuozi'
   })
   assert.match(script, /^#!\/bin\/bash/)
   assert.match(script, /pid=4321/)
@@ -141,8 +141,8 @@ test('buildPosixCleanupScript waits for the PID, runs the uninstall module, remo
   // bounded wait (~30s), not unbounded
   assert.match(script, /seq 1 60/)
   assert.match(script, /'-m' 'shuozi_cli\.uninstall' '--mode' 'gui'/)
-  assert.match(script, /rm -rf '\/opt\/hermes\/linux-unpacked'/)
-  assert.match(script, /export SHUOZI_HOME='\/home\/x\/\.hermes'/)
+  assert.match(script, /rm -rf '\/opt\/shuozi\/linux-unpacked'/)
+  assert.match(script, /export SHUOZI_HOME='\/home\/x\/\.shuozi'/)
 })
 
 test('buildPosixCleanupScript exports PYTHONPATH when pythonPath is set (lite/full)', () => {
@@ -153,11 +153,11 @@ test('buildPosixCleanupScript exports PYTHONPATH when pythonPath is set (lite/fu
     agentRoot: '/home/x/.shuozi/shuozi-agent',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'full'],
     appPath: null,
-    hermesHome: '/home/x/.hermes'
+    shuoziHome: '/home/x/.shuozi'
   })
   // System python + source on PYTHONPATH so import shuozi_cli works while the
   // venv is torn down.
-  assert.match(script, /export PYTHONPATH='\/home\/x\/\.hermes\/shuozi-agent'/)
+  assert.match(script, /export PYTHONPATH='\/home\/x\/\.shuozi\/shuozi-agent'/)
   assert.match(script, /'\/usr\/bin\/python3' '-m' 'shuozi_cli\.uninstall' '--mode' 'full'/)
 })
 
@@ -169,7 +169,7 @@ test('buildPosixCleanupScript omits PYTHONPATH when pythonPath is null (gui)', (
     agentRoot: '/a',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'gui'],
     appPath: null,
-    hermesHome: '/h'
+    shuoziHome: '/h'
   })
   assert.doesNotMatch(script, /export PYTHONPATH/)
 })
@@ -182,7 +182,7 @@ test('buildPosixCleanupScript omits the bundle rm when appPath is null', () => {
     agentRoot: '/a',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'lite'],
     appPath: null,
-    hermesHome: '/h'
+    shuoziHome: '/h'
   })
   assert.doesNotMatch(script, /rm -rf '\//)
   // Still runs the uninstall.
@@ -197,7 +197,7 @@ test('buildPosixCleanupScript single-quote-escapes paths with apostrophes', () =
     agentRoot: '/a',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'gui'],
     appPath: null,
-    hermesHome: '/h'
+    shuoziHome: '/h'
   })
   // The apostrophe is closed-escaped-reopened so the shell sees the literal.
   assert.match(script, /'\/home\/o'\\''brien\/python'/)
@@ -209,16 +209,16 @@ test('buildWindowsCleanupScript waits (bounded) for PID, runs uninstall, rmdir b
   const script = buildWindowsCleanupScript({
     desktopPid: 9988,
     pythonExe: 'C:\\Python313\\python.exe',
-    pythonPath: 'C:\\hermes',
-    agentRoot: 'C:\\hermes',
+    pythonPath: 'C:\\shuozi',
+    agentRoot: 'C:\\shuozi',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'full'],
     appPath: 'C:\\Users\\x\\AppData\\Local\\Programs\\Hermes',
-    hermesHome: 'C:\\Users\\x\\AppData\\Local\\hermes'
+    shuoziHome: 'C:\\Users\\x\\AppData\\Local\\shuozi'
   })
   assert.match(script, /@echo off/)
   assert.match(script, /set "PID=9988"/)
   // PYTHONPATH set so a system python can import shuozi_cli from source.
-  assert.match(script, /set "PYTHONPATH=C:\\hermes;%PYTHONPATH%"/)
+  assert.match(script, /set "PYTHONPATH=C:\\shuozi;%PYTHONPATH%"/)
   assert.match(script, /"C:\\Python313\\python.exe" "-m" "shuozi_cli\.uninstall" "--mode" "full"/)
   // Bounded wait-loop (no infinite loop), whole-token PID match (no substring).
   assert.match(script, /if %waited% geq 60 goto waited_done/)
@@ -239,7 +239,7 @@ test('buildWindowsCleanupScript omits PYTHONPATH + rmdir when not needed (gui, n
     agentRoot: 'C:\\h',
     uninstallArgs: ['-m', 'shuozi_cli.uninstall', '--mode', 'gui'],
     appPath: null,
-    hermesHome: 'C:\\h'
+    shuoziHome: 'C:\\h'
   })
   assert.doesNotMatch(script, /rmdir/)
   assert.doesNotMatch(script, /set "PYTHONPATH=/)

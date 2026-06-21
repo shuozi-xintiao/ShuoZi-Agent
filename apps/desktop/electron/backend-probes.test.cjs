@@ -36,7 +36,7 @@ test('canImportShuoziCli returns false when interpreter cannot run -c', () => {
 })
 
 test('canImportShuoziCli returns false when binary does not exist', () => {
-  const ghost = path.join(os.tmpdir(), 'hermes-probes-ghost-' + Date.now() + '.exe')
+  const ghost = path.join(os.tmpdir(), 'shuozi-probes-ghost-' + Date.now() + '.exe')
   assert.equal(canImportShuoziCli(ghost), false)
 })
 
@@ -47,7 +47,7 @@ test('verifyShuoziCli returns false when command is falsy', () => {
 })
 
 test('verifyShuoziCli returns false when binary does not exist', () => {
-  const ghost = path.join(os.tmpdir(), 'hermes-probes-ghost-' + Date.now() + '.exe')
+  const ghost = path.join(os.tmpdir(), 'shuozi-probes-ghost-' + Date.now() + '.exe')
   assert.equal(verifyShuoziCli(ghost), false)
 })
 
@@ -55,7 +55,7 @@ test('verifyShuoziCli returns true when --version exits 0', () => {
   // Write a tiny script that exits 0 regardless of args, then invoke
   // it through node. This stands in for a working shuozi binary --
   // verifyShuoziCli only cares about the exit code.
-  const scriptPath = path.join(os.tmpdir(), `hermes-probes-ok-${Date.now()}-${process.pid}.cjs`)
+  const scriptPath = path.join(os.tmpdir(), `shuozi-probes-ok-${Date.now()}-${process.pid}.cjs`)
   fs.writeFileSync(scriptPath, 'process.exit(0)\n')
   try {
     // Use node as the launcher and our script as the "command". Pass

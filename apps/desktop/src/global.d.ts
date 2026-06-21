@@ -2,7 +2,7 @@ export {}
 
 declare global {
   interface Window {
-    hermesDesktop: {
+    shuoziDesktop: {
       // Resolve a backend connection. Omit `profile` (or pass the primary) for
       // the window's backend; pass a named profile to lazily spawn/reuse that
       // profile's backend from the pool.
@@ -159,7 +159,7 @@ export interface DesktopVersionInfo {
   electronVersion: string
   nodeVersion: string
   platform: string
-  hermesRoot: string
+  shuoziRoot: string
 }
 
 export type DesktopUninstallMode = 'full' | 'gui' | 'lite'
@@ -223,7 +223,7 @@ export interface DesktopUpdateApplyResult {
    *  `shuozi update` themselves. `command` is the exact line to run. */
   manual?: boolean
   command?: string
-  hermesRoot?: string
+  shuoziRoot?: string
 }
 
 export type DesktopUpdateStage = 'idle' | 'prepare' | 'fetch' | 'pull' | 'pydeps' | 'restart' | 'manual' | 'error'

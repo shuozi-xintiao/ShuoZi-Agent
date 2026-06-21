@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { GlyphSpinner } from '@/components/ui/glyph-spinner'
 import { Switch } from '@/components/ui/switch'
-import type { ShuoziGateway } from '@/hermes'
-import { getGlobalModelOptions } from '@/hermes'
+import type { ShuoziGateway } from '@/shuozi'
+import { getGlobalModelOptions } from '@/shuozi'
 import { useI18n } from '@/i18n'
 import { displayModelName, modelDisplayParts } from '@/lib/model-status-label'
 import {
@@ -19,7 +19,7 @@ import {
   modelVisibilityKey,
   setVisibleModels
 } from '@/store/model-visibility'
-import type { ModelOptionProvider, ModelOptionsResponse } from '@/types/hermes'
+import type { ModelOptionProvider, ModelOptionsResponse } from '@/types/shuozi'
 
 interface ModelVisibilityDialogProps {
   gw?: ShuoziGateway

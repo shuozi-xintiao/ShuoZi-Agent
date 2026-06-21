@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from 'react'
 
-import type { ShuoziGateway } from '@/hermes'
+import type { ShuoziGateway } from '@/shuozi'
 import type { IconComponent } from '@/lib/icons'
-import type { EnvVarInfo } from '@/types/hermes'
+import type { EnvVarInfo } from '@/types/shuozi'
 
 export type SettingsView = 'about' | 'gateway' | 'keys' | 'mcp' | 'providers' | 'sessions' | `config:${string}`
 export type EnvPatch = Partial<Pick<EnvVarInfo, 'is_set' | 'redacted_value'>>

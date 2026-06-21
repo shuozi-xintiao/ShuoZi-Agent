@@ -1,4 +1,4 @@
-import type { ShuoziConfigRecord, ToolsetInfo } from '@/types/hermes'
+import type { ShuoziConfigRecord, ToolsetInfo } from '@/types/shuozi'
 
 import { BUILTIN_PERSONALITIES, ENUM_OPTIONS, PROVIDER_GROUPS } from './constants'
 

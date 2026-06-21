@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ShuoziConfigRecord } from '@/types/hermes'
+import type { ShuoziConfigRecord } from '@/types/shuozi'
 
 import { defineFieldCopy, fieldCopyForSchemaKey, schemaKeyToFieldCopyKey } from './field-copy'
 import { enumOptionsFor, getNested, providerGroup, setNested, stripToolsetLabel, toolsetDisplayLabel } from './helpers'

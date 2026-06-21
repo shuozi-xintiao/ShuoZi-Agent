@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import type { HermesConnection } from '@/global'
-import { ShuoziGateway } from '@/hermes'
+import { ShuoziGateway } from '@/shuozi'
 import { translateNow } from '@/i18n'
 import { desktopDefaultCwd } from '@/lib/desktop-fs'
 import { isGatewayReauthRequired, resolveGatewayWsUrl } from '@/lib/gateway-ws-url'
@@ -38,12 +38,12 @@ import {
   setCurrentCwd,
   setSessionsLoading
 } from '@/store/session'
-import type { RpcEvent } from '@/types/hermes'
+import type { RpcEvent } from '@/types/shuozi'
 
 interface GatewayBootOptions {
   handleGatewayEvent: (event: RpcEvent) => void
   onConnectionReady: (
-    connection: Awaited<ReturnType<NonNullable<typeof window.hermesDesktop>['getConnection']>> | null
+    connection: Awaited<ReturnType<NonNullable<typeof window.shuoziDesktop>['getConnection']>> | null
   ) => void
   onGatewayReady: (gateway: ShuoziGateway | null) => void
   refreshShuoziConfig: () => Promise<void>
@@ -75,7 +75,7 @@ export function useGatewayBoot({
 
   useEffect(() => {
     let cancelled = false
-    const desktop = window.hermesDesktop
+    const desktop = window.shuoziDesktop
 
     const publish = (next: HermesConnection | null) => {
       callbacksRef.current.onConnectionReady(next)

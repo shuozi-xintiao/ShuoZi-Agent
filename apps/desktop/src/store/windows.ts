@@ -54,7 +54,7 @@ export function isWatchWindow(): boolean {
 // True when running inside the Electron desktop shell (the preload bridge is
 // present). The "open in new window" affordance is desktop-only.
 export function canOpenSessionWindow(): boolean {
-  return typeof window !== 'undefined' && typeof window.hermesDesktop?.openSessionWindow === 'function'
+  return typeof window !== 'undefined' && typeof window.shuoziDesktop?.openSessionWindow === 'function'
 }
 
 // Open (or focus) a standalone OS window for a single chat session. No-ops
@@ -66,7 +66,7 @@ export async function openSessionInNewWindow(sessionId: string, opts?: { watch?:
   }
 
   try {
-    const result = await window.hermesDesktop.openSessionWindow(sessionId, opts)
+    const result = await window.shuoziDesktop.openSessionWindow(sessionId, opts)
 
     if (!result?.ok) {
       notifyError(new Error(result?.error || 'unknown error'), 'Could not open chat in a new window')

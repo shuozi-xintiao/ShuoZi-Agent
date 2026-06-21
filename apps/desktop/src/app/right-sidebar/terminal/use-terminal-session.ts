@@ -32,7 +32,7 @@ function previewSelectionLabel(): string {
   return source.split(/[\\/]/).filter(Boolean).pop() || target?.label?.trim() || ''
 }
 
-const SHUOZI_PATHS_MIME = 'application/x-hermes-paths'
+const SHUOZI_PATHS_MIME = 'application/x-shuozi-paths'
 
 function readEscapeSequence(data: string, index: number) {
   if (data.charCodeAt(index) !== 0x1b || index + 1 >= data.length) {
@@ -187,7 +187,7 @@ function collectDroppedPaths(t: DataTransfer): string[] {
     // Malformed in-app drag payload — fall through to OS files.
   }
 
-  const getPath = window.hermesDesktop?.getPathForFile
+  const getPath = window.shuoziDesktop?.getPathForFile
 
   const addFile = (file: File | null) => {
     if (!file || !getPath) {
@@ -314,7 +314,7 @@ export function useTerminalSession({ cwd, onAddSelectionToChat }: UseTerminalSes
 
   useEffect(() => {
     const host = hostRef.current
-    const terminalApi = window.hermesDesktop?.terminal
+    const terminalApi = window.shuoziDesktop?.terminal
 
     if (!host || !terminalApi) {
       setStatus('closed')
@@ -343,7 +343,7 @@ export function useTerminalSession({ cwd, onAddSelectionToChat }: UseTerminalSes
       fontWeightBold: 'bold',
       letterSpacing: 0,
       lineHeight: 1.12,
-      // Full-screen TUIs (hermes --tui, vim) grab the mouse, so a plain drag
+      // Full-screen TUIs (shuozi --tui, vim) grab the mouse, so a plain drag
       // can't select — ⌥-drag (macOS) / Shift-drag (else) forces a native
       // selection over mouse-mode apps, which ⌘/Ctrl+L then sends to chat.
       macOptionClickForcesSelection: true,
@@ -616,7 +616,7 @@ export function useTerminalSession({ cwd, onAddSelectionToChat }: UseTerminalSes
         term.loadAddon(webgl)
         webglRef.current = webgl
       } catch (err) {
-        console.warn('[hermes-terminal] WebGL unavailable; falling back to DOM', err)
+        console.warn('[shuozi-terminal] WebGL unavailable; falling back to DOM', err)
       }
 
       fitAndResize()

@@ -40,7 +40,7 @@ describe('gatewayMediaDataUrl', () => {
 
   beforeEach(() => {
     api.mockClear()
-    vi.stubGlobal('window', { hermesDesktop: { api } })
+    vi.stubGlobal('window', { shuoziDesktop: { api } })
   })
 
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('gatewayMediaDataUrl', () => {
 
     expect(url).toBe('data:image/png;base64,ZHVtbXk=')
     expect(api).toHaveBeenCalledWith({
-      path: '/api/media?path=%2Fhome%2Fu%2F.hermes%2Fimages%2Fa%20b.png'
+      path: '/api/media?path=%2Fhome%2Fu%2F.shuozi%2Fimages%2Fa%20b.png'
     })
   })
 })

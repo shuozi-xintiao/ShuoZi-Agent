@@ -1,7 +1,7 @@
 import type { ConnectionState, GatewayEvent } from '@shuozi/shared'
 import { atom } from 'nanostores'
 
-import { ShuoziGateway } from '@/hermes'
+import { ShuoziGateway } from '@/shuozi'
 import { resolveGatewayWsUrl } from '@/lib/gateway-ws-url'
 import { setGatewayState } from '@/store/session'
 
@@ -104,7 +104,7 @@ function clearTimer(entry: Secondary): void {
 }
 
 async function openSecondary(entry: Secondary): Promise<void> {
-  const desktop = window.hermesDesktop
+  const desktop = window.shuoziDesktop
 
   if (!desktop) {
     return
@@ -251,7 +251,7 @@ export function reconnectSecondaryGateways(): void {
 // Keep the idle reaper from killing a backend we still need: ping every live
 // secondary. The active one is pinged separately (touchActiveGatewayBackend).
 export function touchSecondaryGateways(): void {
-  const desktop = window.hermesDesktop
+  const desktop = window.shuoziDesktop
 
   for (const entry of secondaries.values()) {
     if (entry.wantOpen) {

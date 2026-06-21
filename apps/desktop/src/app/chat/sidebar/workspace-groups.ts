@@ -1,5 +1,5 @@
 import type { HermesWorktreeInfo } from '@/global'
-import type { SessionInfo } from '@/hermes'
+import type { SessionInfo } from '@/shuozi'
 
 export interface SidebarSessionGroup {
   id: string

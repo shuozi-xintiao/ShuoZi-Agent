@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 
 import { useI18n } from '@/i18n'
-import type { ModelOptionProvider, ModelOptionsResponse, ModelPricing } from '@/types/hermes'
+import type { ModelOptionProvider, ModelOptionsResponse, ModelPricing } from '@/types/shuozi'
 
-import type { ShuoziGateway } from '../hermes'
-import { getGlobalModelOptions } from '../hermes'
+import type { ShuoziGateway } from '../shuozi'
+import { getGlobalModelOptions } from '../shuozi'
 import { cn } from '../lib/utils'
 import { startManualOnboarding } from '../store/onboarding'
 

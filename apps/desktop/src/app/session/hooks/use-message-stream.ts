@@ -46,7 +46,7 @@ import {
 import { clearSessionSubagents, pruneDelegateFallbackSubagents, upsertSubagent } from '@/store/subagents'
 import { setSessionTodos } from '@/store/todos'
 import { recordToolDiff } from '@/store/tool-diffs'
-import type { RpcEvent } from '@/types/hermes'
+import type { RpcEvent } from '@/types/shuozi'
 
 import type { ClientSessionState } from '../../types'
 
@@ -641,7 +641,7 @@ export function useMessageStream({
       }
 
       if (document.hidden && sessionId === activeSessionIdRef.current) {
-        void window.hermesDesktop?.notify({
+        void window.shuoziDesktop?.notify({
           title: 'ShuoZi Agent finished',
           body: text.slice(0, 140) || 'The response is ready.'
         })

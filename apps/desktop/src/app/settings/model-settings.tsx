@@ -10,8 +10,8 @@ import {
   getRecommendedDefaultModel,
   setEnvVar,
   setModelAssignment
-} from '@/hermes'
-import type { AuxiliaryModelsResponse, ModelOptionProvider, StaleAuxAssignment } from '@/hermes'
+} from '@/shuozi'
+import type { AuxiliaryModelsResponse, ModelOptionProvider, StaleAuxAssignment } from '@/shuozi'
 import { useI18n } from '@/i18n'
 import { AlertTriangle, Cpu, Loader2 } from '@/lib/icons'
 import { cn } from '@/lib/utils'

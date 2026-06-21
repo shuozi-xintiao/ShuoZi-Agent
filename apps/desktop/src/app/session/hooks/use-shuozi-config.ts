@@ -1,6 +1,6 @@
 import { type MutableRefObject, useCallback, useState } from 'react'
 
-import { getShuoziConfig, getShuoziConfigDefaults } from '@/hermes'
+import { getShuoziConfig, getShuoziConfigDefaults } from '@/shuozi'
 import { BUILTIN_PERSONALITIES, normalizePersonalityValue, personalityNamesFromConfig } from '@/lib/chat-runtime'
 import {
   $currentCwd,
