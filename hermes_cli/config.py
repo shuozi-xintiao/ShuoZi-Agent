@@ -2796,6 +2796,23 @@ OPTIONAL_ENV_VARS = {
         "password": False,
         "category": "provider",
     },
+    # -------------------------------------------------------------------
+    # ShuoZi AI — native model provider for ShuoZi Agent & ShuoZi OS
+    # -------------------------------------------------------------------
+    "SHUOZI_API_KEY": {
+        "description": "ShuoZi model API key for native ShuoZi Agent access",
+        "prompt": "ShuoZi API Key",
+        "url": "https://shuozi.ai/console/api-keys",
+        "password": True,
+        "category": "provider",
+    },
+    "SHUOZI_BASE_URL": {
+        "description": "ShuoZi API base URL. Defaults to https://api.shuozi.ai/v1 when unset.",
+        "prompt": "ShuoZi Base URL",
+        "url": "",
+        "password": False,
+        "category": "provider",
+    },
     "DASHSCOPE_API_KEY": {
         "description": "Alibaba Cloud DashScope API key (Qwen + multi-provider models)",
         "prompt": "DashScope API Key",
