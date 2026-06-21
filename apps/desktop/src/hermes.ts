@@ -1,4 +1,4 @@
-import { JsonRpcGatewayClient } from '@hermes/shared'
+import { JsonRpcGatewayClient } from '@shuozi/shared'
 
 import type {
   ActionResponse,
