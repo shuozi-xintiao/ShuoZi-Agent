@@ -642,7 +642,7 @@ export function useMessageStream({
 
       if (document.hidden && sessionId === activeSessionIdRef.current) {
         void window.hermesDesktop?.notify({
-          title: 'Hermes finished',
+          title: 'ShuoZi Agent finished',
           body: text.slice(0, 140) || 'The response is ready.'
         })
       }
@@ -1043,7 +1043,7 @@ export function useMessageStream({
         } else if (isActiveEvent) {
           notify({
             kind: 'error',
-            title: 'Hermes error',
+            title: 'ShuoZi Agent error',
             message: errorMessage
           })
         }
