@@ -1,4 +1,4 @@
-# Hermes Agent Has Had "Routines" Since March
+# ShuoZi Agent Has Had "Routines" Since March
 
 Anthropic just announced [Claude Code Routines](https://claude.com/blog/introducing-routines-in-claude-code) — scheduled tasks, GitHub event triggers, and API-triggered agent runs. Bundled prompt + repo + connectors, running on their infrastructure.
 
@@ -48,7 +48,7 @@ Every use case in their blog post — backlog triage, docs drift, deploy verific
 
 ## What's Different
 
-| | Claude Code Routines | Hermes Agent |
+| | Claude Code Routines | ShuoZi Agent |
 |---|---|---|
 | **Scheduled tasks** | ✅ Schedule-based | ✅ Any cron expression + human-readable intervals |
 | **GitHub triggers** | ✅ PR, issue, push events | ✅ Any GitHub event via webhook subscriptions |
@@ -124,10 +124,10 @@ A nightly backlog triage on Sonnet costs roughly $0.02-0.05. A monitoring check 
 
 ## Get Started
 
-Hermes Agent is open source and free. The automation infrastructure — cron scheduler, webhook platform, skill system, multi-platform delivery — is built in.
+ShuoZi Agent is open source and free. The automation infrastructure — cron scheduler, webhook platform, skill system, multi-platform delivery — is built in.
 
 ```bash
-pip install hermes-agent
+pip install shuozi-agent
 hermes setup
 ```
 
@@ -149,12 +149,12 @@ hermes webhook subscribe pr-review \
   --deliver github_comment
 ```
 
-Full automation blueprints gallery: [hermes-agent.nousresearch.com/docs/reference/automation-blueprints-catalog](https://hermes-agent.nousresearch.com/docs/reference/automation-blueprints-catalog)
+Full automation blueprints gallery: [shuozi-agent.nousresearch.com/docs/reference/automation-blueprints-catalog](https://shuozi-agent.nousresearch.com/docs/reference/automation-blueprints-catalog)
 
-Documentation: [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com)
+Documentation: [shuozi-agent.nousresearch.com](https://shuozi-agent.nousresearch.com)
 
-GitHub: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)
+GitHub: [github.com/NousResearch/shuozi-agent](https://github.com/NousResearch/shuozi-agent)
 
 ---
 
-*Hermes Agent is built by [Nous Research](https://nousresearch.com). Open source, model-agnostic, runs on your infrastructure.*
+*ShuoZi Agent is built by [Nous Research](https://nousresearch.com). Open source, model-agnostic, runs on your infrastructure.*
