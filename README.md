@@ -8,6 +8,18 @@
   <a href="https://github.com/shuozi-xintiao/ShuoZi-Agent"><img src="https://img.shields.io/badge/Built%20by-ShuoZi%20Labs-blueviolet?style=for-the-badge" alt="Built by ShuoZi Labs"></a>
 </p>
 
+## 下载安装
+
+```bash
+# Windows / macOS / Linux 通用
+git clone https://github.com/shuozi-xintiao/ShuoZi-Agent.git
+cd ShuoZi-Agent
+uv sync
+uv run shuozi
+```
+
+> 需要 Python 3.11+ 和 [uv](https://docs.astral.sh/uv/)。详见 [INSTALL.md](INSTALL.md)。
+
 ---
 
 **ShuoZi Agent** 是 ShuoZi OS 的原生 AI 智能层——一个具备持续学习能力的自主 AI Agent。它跨会话积累记忆、从经验中自动提炼技能、能调度子 Agent 并行工作、支持定时任务无人值守运行。
