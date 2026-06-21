@@ -59,6 +59,8 @@ _HERMES_CORE_TOOLS = [
     "execute_code", "delegate_task",
     # Cronjob management
     "cronjob",
+    # ShuoZi OS native tools — build, status, emulation
+    "shuozi_build", "shuozi_status",
     # Cross-platform messaging (gated on gateway running via check_fn)
     "send_message",
     # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
@@ -185,6 +187,12 @@ TOOLSETS = {
     "cronjob": {
         "description": "Cronjob management tool - create, list, update, pause, resume, remove, and trigger scheduled tasks",
         "tools": ["cronjob"],
+        "includes": []
+    },
+
+    "shuozi_os": {
+        "description": "ShuoZi OS native development tools — build, emulate, and inspect the ShuoZi operating system",
+        "tools": ["shuozi_build", "shuozi_status"],
         "includes": []
     },
     

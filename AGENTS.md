@@ -1,12 +1,13 @@
-# Hermes Agent - Development Guide
+# ShuoZi Agent — Development Guide
 
-Instructions for AI coding assistants and developers working on the hermes-agent codebase.
+Instructions for AI coding assistants and developers working on the shuozi-agent codebase.
 
 **Never give up on the right solution.**
 
-## What Hermes Is
+## What ShuoZi Agent Is
 
-Hermes is a personal AI agent that runs the same agent core across a CLI, a
+ShuoZi Agent is the native AI layer of ShuoZi OS — an AI-native operating system
+built from bare metal by ShuoZi Labs. It runs the same agent core across a CLI, a
 messaging gateway (Telegram, Discord, Slack, and ~20 other platforms), a TUI,
 and an Electron desktop app. It learns across sessions (memory + skills),
 delegates to subagents, runs scheduled jobs, and drives a real terminal and
