@@ -50,7 +50,7 @@ export const ja = defineLocale({
       loadingSettings: 'ShuoZi の設定を読み込み中',
       loadingSessions: '最近のセッションを読み込み中',
       startingDesktopConnection: 'デスクトップ接続を開始中',
-      startingShuoZiDesktop: 'ShuoZi Desktop を起動中…'
+      startingShuoziDesktop: 'ShuoZi Desktop を起動中…'
     },
     errors: {
       backgroundExited: 'ShuoZi バックグラウンドプロセスが終了しました。',

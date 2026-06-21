@@ -50,7 +50,7 @@ export const zh: Translations = {
       loadingSettings: '正在加载 ShuoZi 设置',
       loadingSessions: '正在加载最近会话',
       startingDesktopConnection: '正在启动桌面连接',
-      startingShuoZiDesktop: '正在启动 ShuoZi 桌面版…'
+      startingShuoziDesktop: '正在启动 ShuoZi 桌面版…'
     },
     errors: {
       backgroundExited: 'ShuoZi 后台进程已退出。',

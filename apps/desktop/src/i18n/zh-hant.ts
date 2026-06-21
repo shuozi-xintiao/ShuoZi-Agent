@@ -50,7 +50,7 @@ export const zhHant = defineLocale({
       loadingSettings: '正在載入 ShuoZi 設定',
       loadingSessions: '正在載入最近工作階段',
       startingDesktopConnection: '正在啟動桌面連線',
-      startingShuoZiDesktop: '正在啟動 ShuoZi Desktop…'
+      startingShuoziDesktop: '正在啟動 ShuoZi Desktop…'
     },
     errors: {
       backgroundExited: 'ShuoZi 背景程序已結束。',

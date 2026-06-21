@@ -50,7 +50,7 @@ export const en: Translations = {
       loadingSettings: 'Loading ShuoZi settings',
       loadingSessions: 'Loading recent sessions',
       startingDesktopConnection: 'Starting desktop connection',
-      startingShuoZiDesktop: 'Starting ShuoZi Desktop…'
+      startingShuoziDesktop: 'Starting ShuoZi Desktop…'
     },
     errors: {
       backgroundExited: 'ShuoZi background process exited.',

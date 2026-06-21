@@ -65,7 +65,7 @@ export interface Translations {
       loadingSettings: string
       loadingSessions: string
       startingDesktopConnection: string
-      startingHermesDesktop: string
+      startingShuoziDesktop: string
     }
     errors: {
       backgroundExited: string
