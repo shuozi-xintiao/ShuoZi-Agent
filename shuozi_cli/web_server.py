@@ -10532,7 +10532,7 @@ def mount_spa(application: FastAPI):
         ``__SHUOZI_AUTH_REQUIRED__`` flag lets the SPA pick the right
         auth scheme for /api/pty and /api/ws (ticket vs token).
         """
-        html = _index_path.read_text()
+        html = _index_path.read_text(encoding='utf-8')
         chat_js = "true" if _DASHBOARD_EMBEDDED_CHAT_ENABLED else "false"
         gated = bool(getattr(app.state, "auth_required", False))
         gated_js = "true" if gated else "false"
