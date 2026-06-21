@@ -4642,7 +4642,7 @@ async function spawnPoolBackend(profile, entry) {
   // --profile wins over the inherited SHUOZI_HOME env (see _apply_profile_override
   // step 3 in shuozi_cli/main.py), so the child re-homes to this profile.
   // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
-  const dashboardArgs = ['--profile', profile, 'dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0', '--insecure']
+  const dashboardArgs = ['--profile', profile, 'dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0']
   const backend = await ensureRuntime(resolveShuoZiBackend(dashboardArgs))
   const shuoziCwd = resolveShuoZiCwd()
   const webDist = resolveWebDist()
@@ -4843,7 +4843,7 @@ async function startShuoZi() {
 
     const token = crypto.randomBytes(32).toString('base64url')
     // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
-    const dashboardArgs = ['dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0', '--insecure']
+    const dashboardArgs = ['dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0']
     // Pin the desktop's chosen profile via the global --profile flag. This is
     // deterministic (it wins over the sticky ~/.shuozi/active_profile file) and
     // resolves SHUOZI_HOME the same way `shuozi -p <name>` does on the CLI. An
