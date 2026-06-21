@@ -48,6 +48,7 @@ _PROVIDER_PREFIXES: frozenset[str] = frozenset({
     "openrouter", "nous", "openai-codex", "copilot", "copilot-acp",
     "gemini", "ollama-cloud", "zai", "kimi-coding", "kimi-coding-cn", "stepfun", "minimax", "minimax-oauth", "minimax-cn", "anthropic", "deepseek",
     "opencode-zen", "opencode-go", "kilocode", "alibaba", "novita",
+    "shuozi",
     "qwen-oauth",
     "xiaomi",
     "arcee",
@@ -194,6 +195,13 @@ DEFAULT_CONTEXT_LENGTHS = {
     "deepseek-chat": 1_000_000,
     "deepseek-reasoner": 1_000_000,
     "deepseek": 128000,
+    # ShuoZi AI — native model provider for ShuoZi Agent & ShuoZi OS.
+    # Context lengths will be updated as ShuoZi model family ships.
+    # Placeholder: 1M context window (matching current SOTA).
+    "shuozi-pro": 1_000_000,
+    "shuozi-flash": 1_000_000,
+    "shuozi-code": 1_000_000,
+    "shuozi": 256000,
     # Meta
     "llama": 131072,
     # Qwen — specific model families before the catch-all.

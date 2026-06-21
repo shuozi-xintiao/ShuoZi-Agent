@@ -155,6 +155,7 @@ PROVIDER_TO_MODELS_DEV: Dict[str, str] = {
     "minimax-oauth": "minimax",
     "minimax-cn": "minimax-cn",
     "deepseek": "deepseek",
+    "shuozi": "shuozi",
     "alibaba": "alibaba",
     "qwen-oauth": "alibaba",
     "copilot": "github-copilot",
