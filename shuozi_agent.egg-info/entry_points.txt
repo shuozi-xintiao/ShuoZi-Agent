@@ -1,0 +1,4 @@
+[console_scripts]
+hermes = hermes_cli.main:main
+shuozi-acp = acp_adapter.entry:main
+shuozi-agent = run_agent:main

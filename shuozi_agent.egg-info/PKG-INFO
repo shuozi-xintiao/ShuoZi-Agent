@@ -1,0 +1,225 @@
+Metadata-Version: 2.4
+Name: shuozi-agent
+Version: 0.16.0
+Summary: The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere
+Author: Nous Research
+License-Expression: MIT
+Requires-Python: <3.14,>=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: openai==2.24.0
+Requires-Dist: python-dotenv==1.2.2
+Requires-Dist: fire==0.7.1
+Requires-Dist: httpx[socks]==0.28.1
+Requires-Dist: rich==14.3.3
+Requires-Dist: tenacity==9.1.4
+Requires-Dist: pyyaml==6.0.3
+Requires-Dist: ruamel.yaml==0.18.17
+Requires-Dist: requests==2.33.0
+Requires-Dist: jinja2==3.1.6
+Requires-Dist: pydantic==2.13.4
+Requires-Dist: prompt_toolkit==3.0.52
+Requires-Dist: croniter==6.0.0
+Requires-Dist: packaging==26.0
+Requires-Dist: Markdown==3.10.2
+Requires-Dist: PyJWT[crypto]==2.13.0
+Requires-Dist: urllib3<3,>=2.7.0
+Requires-Dist: tzdata==2025.3; sys_platform == "win32"
+Requires-Dist: psutil==7.2.2
+Requires-Dist: pathspec==1.1.1
+Requires-Dist: fastapi<1,>=0.104.0
+Requires-Dist: uvicorn[standard]<1,>=0.24.0
+Requires-Dist: ptyprocess<1,>=0.7.0; sys_platform != "win32"
+Requires-Dist: pywinpty<3,>=2.0.0; sys_platform == "win32"
+Requires-Dist: Pillow==12.2.0
+Provides-Extra: anthropic
+Requires-Dist: anthropic==0.87.0; extra == "anthropic"
+Provides-Extra: exa
+Requires-Dist: exa-py==2.10.2; extra == "exa"
+Provides-Extra: firecrawl
+Requires-Dist: firecrawl-py==4.17.0; extra == "firecrawl"
+Provides-Extra: parallel-web
+Requires-Dist: parallel-web==0.6.0; extra == "parallel-web"
+Provides-Extra: fal
+Requires-Dist: fal-client==0.13.1; extra == "fal"
+Provides-Extra: edge-tts
+Requires-Dist: edge-tts==7.2.7; extra == "edge-tts"
+Provides-Extra: modal
+Requires-Dist: modal==1.3.4; extra == "modal"
+Provides-Extra: daytona
+Requires-Dist: daytona==0.155.0; extra == "daytona"
+Provides-Extra: hindsight
+Requires-Dist: hindsight-client==0.6.1; extra == "hindsight"
+Provides-Extra: dev
+Requires-Dist: debugpy==1.8.20; extra == "dev"
+Requires-Dist: pytest==9.0.2; extra == "dev"
+Requires-Dist: pytest-asyncio==1.3.0; extra == "dev"
+Requires-Dist: mcp==1.26.0; extra == "dev"
+Requires-Dist: starlette==1.0.1; extra == "dev"
+Requires-Dist: ty==0.0.21; extra == "dev"
+Requires-Dist: ruff==0.15.10; extra == "dev"
+Requires-Dist: setuptools==82.0.1; extra == "dev"
+Provides-Extra: messaging
+Requires-Dist: python-telegram-bot[webhooks]==22.6; extra == "messaging"
+Requires-Dist: discord.py[voice]==2.7.1; extra == "messaging"
+Requires-Dist: aiohttp==3.13.4; extra == "messaging"
+Requires-Dist: brotlicffi==1.2.0.1; extra == "messaging"
+Requires-Dist: slack-bolt==1.27.0; extra == "messaging"
+Requires-Dist: slack-sdk==3.40.1; extra == "messaging"
+Requires-Dist: qrcode==7.4.2; extra == "messaging"
+Provides-Extra: cron
+Provides-Extra: slack
+Requires-Dist: slack-bolt==1.27.0; extra == "slack"
+Requires-Dist: slack-sdk==3.40.1; extra == "slack"
+Requires-Dist: aiohttp==3.13.4; extra == "slack"
+Provides-Extra: matrix
+Requires-Dist: mautrix[encryption]==0.21.0; extra == "matrix"
+Requires-Dist: aiosqlite==0.22.1; extra == "matrix"
+Requires-Dist: asyncpg==0.31.0; extra == "matrix"
+Requires-Dist: aiohttp-socks==0.11.0; extra == "matrix"
+Provides-Extra: wecom
+Requires-Dist: defusedxml==0.7.1; extra == "wecom"
+Provides-Extra: cli
+Requires-Dist: simple-term-menu==1.6.6; extra == "cli"
+Provides-Extra: tts-premium
+Requires-Dist: elevenlabs==1.59.0; extra == "tts-premium"
+Provides-Extra: voice
+Requires-Dist: faster-whisper==1.2.1; extra == "voice"
+Requires-Dist: sounddevice==0.5.5; extra == "voice"
+Requires-Dist: numpy==2.4.3; extra == "voice"
+Provides-Extra: pty
+Provides-Extra: honcho
+Requires-Dist: honcho-ai==2.0.1; extra == "honcho"
+Provides-Extra: vision
+Provides-Extra: mcp
+Requires-Dist: mcp==1.26.0; extra == "mcp"
+Requires-Dist: starlette==1.0.1; extra == "mcp"
+Provides-Extra: nemo-relay
+Requires-Dist: nemo-relay==0.3; extra == "nemo-relay"
+Provides-Extra: homeassistant
+Requires-Dist: aiohttp==3.13.4; extra == "homeassistant"
+Provides-Extra: sms
+Requires-Dist: aiohttp==3.13.4; extra == "sms"
+Provides-Extra: computer-use
+Requires-Dist: mcp==1.26.0; extra == "computer-use"
+Requires-Dist: starlette==1.0.1; extra == "computer-use"
+Provides-Extra: acp
+Requires-Dist: agent-client-protocol==0.9.0; extra == "acp"
+Provides-Extra: mistral
+Requires-Dist: mistralai==2.4.8; extra == "mistral"
+Provides-Extra: bedrock
+Requires-Dist: boto3==1.42.89; extra == "bedrock"
+Provides-Extra: azure-identity
+Requires-Dist: azure-identity==1.25.3; extra == "azure-identity"
+Provides-Extra: termux
+Requires-Dist: python-telegram-bot[webhooks]==22.6; extra == "termux"
+Requires-Dist: shuozi-agent[cron]; extra == "termux"
+Requires-Dist: shuozi-agent[cli]; extra == "termux"
+Requires-Dist: shuozi-agent[pty]; extra == "termux"
+Requires-Dist: shuozi-agent[mcp]; extra == "termux"
+Requires-Dist: shuozi-agent[honcho]; extra == "termux"
+Requires-Dist: shuozi-agent[acp]; extra == "termux"
+Provides-Extra: termux-all
+Requires-Dist: shuozi-agent[termux]; extra == "termux-all"
+Requires-Dist: shuozi-agent[google]; extra == "termux-all"
+Requires-Dist: shuozi-agent[homeassistant]; extra == "termux-all"
+Requires-Dist: shuozi-agent[sms]; extra == "termux-all"
+Requires-Dist: shuozi-agent[web]; extra == "termux-all"
+Provides-Extra: dingtalk
+Requires-Dist: dingtalk-stream==0.24.3; extra == "dingtalk"
+Requires-Dist: alibabacloud-dingtalk==2.2.42; extra == "dingtalk"
+Requires-Dist: qrcode==7.4.2; extra == "dingtalk"
+Provides-Extra: feishu
+Requires-Dist: lark-oapi==1.5.3; extra == "feishu"
+Requires-Dist: qrcode==7.4.2; extra == "feishu"
+Provides-Extra: google
+Requires-Dist: google-api-python-client==2.194.0; extra == "google"
+Requires-Dist: google-auth-oauthlib==1.3.1; extra == "google"
+Requires-Dist: google-auth-httplib2==0.3.1; extra == "google"
+Provides-Extra: youtube
+Requires-Dist: youtube-transcript-api==1.2.4; extra == "youtube"
+Provides-Extra: web
+Requires-Dist: fastapi==0.133.1; extra == "web"
+Requires-Dist: uvicorn[standard]==0.41.0; extra == "web"
+Requires-Dist: starlette==1.0.1; extra == "web"
+Provides-Extra: all
+Requires-Dist: shuozi-agent[cron]; extra == "all"
+Requires-Dist: shuozi-agent[cli]; extra == "all"
+Requires-Dist: shuozi-agent[pty]; extra == "all"
+Requires-Dist: shuozi-agent[mcp]; extra == "all"
+Requires-Dist: shuozi-agent[homeassistant]; extra == "all"
+Requires-Dist: shuozi-agent[sms]; extra == "all"
+Requires-Dist: shuozi-agent[acp]; extra == "all"
+Requires-Dist: shuozi-agent[google]; extra == "all"
+Requires-Dist: shuozi-agent[web]; extra == "all"
+Requires-Dist: shuozi-agent[youtube]; extra == "all"
+Dynamic: license-file
+
+<p align="center">
+  <h1>硕兹 Agent &mdash; ShuoZi Agent</h1>
+  <p>ShuoZi OS 原生 AI 智能层 &bull; Built by ShuoZi Labs</p>
+</p>
+
+<p align="center">
+  <a href="https://github.com/shuozi-xintiao/ShuoZi-Agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/shuozi-xintiao/ShuoZi-Agent"><img src="https://img.shields.io/badge/Built%20by-ShuoZi%20Labs-blueviolet?style=for-the-badge" alt="Built by ShuoZi Labs"></a>
+</p>
+
+## 下载安装
+
+```bash
+# Windows / macOS / Linux 通用
+git clone https://github.com/shuozi-xintiao/ShuoZi-Agent.git
+cd ShuoZi-Agent
+uv sync
+uv run shuozi
+```
+
+> 需要 Python 3.11+ 和 [uv](https://docs.astral.sh/uv/)。详见 [INSTALL.md](INSTALL.md)。
+
+---
+
+**ShuoZi Agent** 是 ShuoZi OS 的原生 AI 智能层——一个具备持续学习能力的自主 AI Agent。它跨会话积累记忆、从经验中自动提炼技能、能调度子 Agent 并行工作、支持定时任务无人值守运行。
+
+无论你用什么模型——OpenAI、Anthropic、DeepSeek、本地模型，或未来 ShuoZi 自研模型——都能即插即用。在终端、桌面 GUI、Telegram 等多平台上无缝衔接。
+
+---
+
+## 核心能力
+
+| 能力 | 说明 |
+|------|------|
+| **持续学习** | 自动从任务中提炼技能（Skills），经验越用越丰富 |
+| **跨会话记忆** | 记住你的偏好、环境、习惯，越用越懂你 |
+| **多平台** | 终端 CLI / 桌面 GUI / Telegram / Discord / Slack 等 |
+| **定时任务** | 内置 Cron 调度器，自动化日报、备份、巡检 |
+| **子 Agent 并行** | 隔离上下文，多任务并行推进 |
+| **模型无关** | DeepSeek / OpenAI / Anthropic / 本地模型 / 未来 ShuoZi 模型皆可 |
+
+## 快速开始
+
+```bash
+# 一行安装（Windows PowerShell）
+iex (irm https://shuozi.ai/install.ps1)
+
+# 启动交互对话
+shuozi
+
+# 指定模型
+shuozi chat --model deepseek-chat --provider deepseek
+```
+
+## 桌面端
+
+ShuoZi Agent 附带完整的 Electron 桌面应用，Windows / macOS / Linux 全平台支持。
+
+```bash
+cd apps/desktop
+npm install
+npm run dev        # 开发模式
+npm run dist:win   # 打包 Windows 安装包
+```
+
+## 许可证
+
+MIT License
