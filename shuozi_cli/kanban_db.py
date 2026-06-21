@@ -6497,8 +6497,8 @@ def _rotate_worker_log(
 def _module_hermes_argv() -> list[str]:
     """Return the interpreter-bound Hermes CLI invocation."""
     # ``shuozi_cli.main`` is the console-script target declared in
-    # pyproject.toml, NOT a top-level ``hermes`` package — there is no
-    # ``hermes`` package to import.
+    # pyproject.toml, NOT a top-level ``shuozi`` package — there is no
+    # ``shuozi`` package to import.
     return [sys.executable, "-m", "shuozi_cli.main"]
 
 
@@ -6570,7 +6570,7 @@ def _hermes_path_argv(path: str) -> list[str]:
 
 
 def _resolve_hermes_argv() -> list[str]:
-    """Resolve the ``hermes`` invocation as argv parts for ``Popen``.
+    """Resolve the ``shuozi`` invocation as argv parts for ``Popen``.
 
     Tries in order:
 
@@ -6584,7 +6584,7 @@ def _resolve_hermes_argv() -> list[str]:
        dispatcher therefore falls back to the interpreter-bound module form
        for implicit ``.cmd`` / ``.bat`` shims.
     3. ``sys.executable -m shuozi_cli.main`` — fallback for setups where
-       Hermes is launched from a venv and the ``hermes`` shim is not on
+       Hermes is launched from a venv and the ``shuozi`` shim is not on
        the dispatcher's ``$PATH`` (cron, systemd ``User=`` services,
        launchd jobs, detached processes, etc.). Goes through the running
        interpreter so the result is independent of ``$PATH``.

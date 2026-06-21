@@ -5,7 +5,7 @@ symlink to the pip-generated entry point at ``$SHUOZI_BIN`` (i.e.
 ``venv/bin/hermes``). When ``setup_path()`` later switched to writing a bash
 shim with ``cat > "$command_link_dir/hermes" <<EOF``, the redirect followed
 the existing symlink and overwrote the pip entry point with the shim. The
-shim's ``exec "$SHUOZI_BIN" "$@"`` then self-recursed and ``hermes`` hung on
+shim's ``exec "$SHUOZI_BIN" "$@"`` then self-recursed and ``shuozi`` hung on
 every invocation.
 
 These tests pin the fix: ``setup_path()`` must remove ``$command_link_dir/hermes``

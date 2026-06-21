@@ -1621,7 +1621,7 @@ function repairMacUpdaterHelper(updater) {
 // `hermes.exe` holds open; on POSIX it's never mandatory-locked.
 function venvHermesShimPath(updateRoot) {
   return IS_WINDOWS
-    ? path.join(updateRoot, 'venv', 'Scripts', 'hermes.exe')
+    ? path.join(updateRoot, 'venv', 'Scripts', 'shuozi.exe')
     : path.join(updateRoot, 'venv', 'bin', 'shuozi')
 }
 

@@ -553,10 +553,10 @@ def compress_context(
             logger.warning("Session DB compression split failed — new session will NOT be indexed: %s", e)
 
     # Notify the context engine that the session_id rotated because of
-    # compression (not a fresh /new). Plugin engines (e.g. hermes-lcm) use
+    # compression (not a fresh /new). Plugin engines (e.g. shuozi-lcm) use
     # boundary_reason="compression" to preserve DAG lineage across the
     # rollover instead of re-initializing fresh per-session state.
-    # See hermes-lcm#68. Built-in ContextCompressor ignores kwargs.
+    # See shuozi-lcm#68. Built-in ContextCompressor ignores kwargs.
     try:
         _old_sid = locals().get("old_session_id")
         if _old_sid and hasattr(agent.context_compressor, "on_session_start"):
@@ -718,7 +718,7 @@ def try_shrink_image_parts_in_messages(api_messages: list) -> bool:
                 "image/jpeg": ".jpg", "image/jpg": ".jpg", "image/bmp": ".bmp",
             }.get(mime, ".jpg")
             tmp = tempfile.NamedTemporaryFile(
-                prefix="hermes_shrink_", suffix=suffix, delete=False,
+                prefix="shuozi_shrink_", suffix=suffix, delete=False,
             )
             try:
                 tmp.write(raw)

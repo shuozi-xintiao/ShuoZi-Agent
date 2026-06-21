@@ -281,7 +281,7 @@ def _get_ancestor_pids() -> set[int]:
 
     Walks from the current PID up to PID 1 (init) so that process-table scans
     never match the calling CLI process or any of its parents.  This prevents
-    ``shuozi gateway status`` from falsely counting the ``hermes`` CLI that
+    ``shuozi gateway status`` from falsely counting the ``shuozi`` CLI that
     invoked it as a running gateway instance (see #13242).
     """
     ancestors: set[int] = set()
@@ -331,7 +331,7 @@ def _scan_gateway_pids(exclude_pids: set[int], all_profiles: bool = False) -> li
         # ``hermes.exe --profile`` / ``hermes.exe -p`` would also match
         # ``hermes.exe --profile foo dashboard`` and other CLI subcommands,
         # producing false-positive gateway PIDs (Copilot review).
-        "hermes.exe gateway",
+        "shuozi.exe gateway",
         "hermes-gateway.exe",
         "gateway/run.py",
     ]
@@ -1730,7 +1730,7 @@ def has_conflicting_systemd_units() -> bool:
 # hermes-gateway rename. Kept as an explicit allowlist (NOT a glob) so
 # profile units (hermes-gateway-*.service) and unrelated third-party
 # "shuozi" units are never matched.
-_LEGACY_SERVICE_NAMES: tuple[str, ...] = ("hermes.service",)
+_LEGACY_SERVICE_NAMES: tuple[str, ...] = ("shuozi.service",)
 
 # ExecStart content markers that identify a unit as running our gateway.
 # A legacy unit is only flagged when its file contains one of these.

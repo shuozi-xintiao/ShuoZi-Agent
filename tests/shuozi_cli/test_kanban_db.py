@@ -2885,7 +2885,7 @@ def test_resolve_hermes_argv_avoids_implicit_windows_batch_shim(monkeypatch, tmp
 
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "hermes.CMD").write_text("@echo off\n", encoding="utf-8")
+    (bin_dir / "shuozi.CMD").write_text("@echo off\n", encoding="utf-8")
     monkeypatch.delenv("SHUOZI_BIN", raising=False)
     monkeypatch.setenv("PATH", str(bin_dir))
     monkeypatch.setenv("PATHEXT", ".CMD")
@@ -2932,7 +2932,7 @@ def test_resolve_hermes_argv_hermes_bin_bare_name_ignores_cwd(monkeypatch, tmp_p
     import sys
     import shuozi_cli.kanban_db as kb
 
-    (tmp_path / "hermes.exe").write_text("wrong\n", encoding="utf-8")
+    (tmp_path / "shuozi.exe").write_text("wrong\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("PATH", "")
     monkeypatch.setenv("SHUOZI_BIN", "shuozi")
@@ -2948,7 +2948,7 @@ def test_resolve_hermes_argv_hermes_bin_bare_cmd_uses_module_fallback(monkeypatc
 
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "hermes.CMD").write_text("@echo off\n", encoding="utf-8")
+    (bin_dir / "shuozi.CMD").write_text("@echo off\n", encoding="utf-8")
     monkeypatch.setenv("PATH", str(bin_dir))
     monkeypatch.setenv("PATHEXT", ".CMD")
     monkeypatch.setenv("SHUOZI_BIN", "shuozi")

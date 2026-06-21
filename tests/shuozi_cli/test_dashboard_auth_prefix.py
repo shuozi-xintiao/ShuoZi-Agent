@@ -402,7 +402,7 @@ class TestPublicUrlOverride:
         # regardless of test ordering.
         prefix_mod._warned_malformed_public_urls.clear()
         patch_config(None)
-        monkeypatch.setenv("SHUOZI_DASHBOARD_PUBLIC_URL", "hermes.domain.com")
+        monkeypatch.setenv("SHUOZI_DASHBOARD_PUBLIC_URL", "shuozi.domain.com")
 
         with caplog.at_level(logging.WARNING, logger=prefix_mod.__name__):
             result = prefix_mod.resolve_public_url()
@@ -415,7 +415,7 @@ class TestPublicUrlOverride:
         ]
         assert any(
             "SHUOZI_DASHBOARD_PUBLIC_URL" in m
-            and "hermes.domain.com" in m
+            and "shuozi.domain.com" in m
             and "scheme" in m
             for m in warnings
         ), f"expected a scheme warning, got: {warnings!r}"
@@ -432,7 +432,7 @@ class TestPublicUrlOverride:
 
         prefix_mod._warned_malformed_public_urls.clear()
         patch_config(None)
-        monkeypatch.setenv("SHUOZI_DASHBOARD_PUBLIC_URL", "hermes.domain.com")
+        monkeypatch.setenv("SHUOZI_DASHBOARD_PUBLIC_URL", "shuozi.domain.com")
 
         with caplog.at_level(logging.WARNING, logger=prefix_mod.__name__):
             for _ in range(5):
@@ -442,7 +442,7 @@ class TestPublicUrlOverride:
             r
             for r in caplog.records
             if r.levelno == logging.WARNING
-            and "hermes.domain.com" in r.getMessage()
+            and "shuozi.domain.com" in r.getMessage()
         ]
         assert len(scheme_warnings) == 1, (
             f"expected exactly one warning across 5 calls, "

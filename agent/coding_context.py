@@ -60,7 +60,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-logger = logging.getLogger("hermes.coding_context")
+logger = logging.getLogger("shuozi.coding_context")
 
 CODING_TOOLSET = "coding"
 

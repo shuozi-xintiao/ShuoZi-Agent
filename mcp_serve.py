@@ -40,7 +40,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
-logger = logging.getLogger("hermes.mcp_serve")
+logger = logging.getLogger("shuozi.mcp_serve")
 
 # ---------------------------------------------------------------------------
 # Lazy MCP SDK import

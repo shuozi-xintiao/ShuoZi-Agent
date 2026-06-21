@@ -1975,7 +1975,7 @@ def test_pool_sync_back_preserves_active_provider(tmp_path, monkeypatch):
     using it on the sync-back path means every xAI/Codex/Nous refresh in a
     multi-provider setup silently overrides the user's chosen active
     provider (visible to ``shuozi auth status``, ``shuozi setup``, and the
-    ``hermes`` no-arg dispatcher).  Pin the ``set_active=False`` contract so
+    ``shuozi`` no-arg dispatcher).  Pin the ``set_active=False`` contract so
     no future refactor regresses to the legacy semantic."""
     from agent.credential_pool import load_pool
 

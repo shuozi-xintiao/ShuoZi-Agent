@@ -10,7 +10,7 @@ Why tools instead of just shelling out to ``shuozi kanban``?
 
 1. **Backend portability.** A worker whose terminal tool points at Docker
    / Modal / Singularity / SSH would run ``shuozi kanban complete …``
-   inside the container, where ``hermes`` isn't installed and the DB
+   inside the container, where ``shuozi`` isn't installed and the DB
    isn't mounted. Tools run in the agent's Python process, so they
    always reach ``~/.shuozi/kanban.db`` regardless of terminal backend.
 

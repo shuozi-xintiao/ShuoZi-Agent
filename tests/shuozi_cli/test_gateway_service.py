@@ -2249,28 +2249,28 @@ class TestLegacyHermesUnitDetection:
 
     def test_detects_legacy_hermes_service_in_user_scope(self, tmp_path, monkeypatch):
         user_dir, _ = self._setup_search_paths(tmp_path, monkeypatch)
-        legacy = user_dir / "hermes.service"
+        legacy = user_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         results = gateway_cli._find_legacy_hermes_units()
 
         assert len(results) == 1
         name, path, is_system = results[0]
-        assert name == "hermes.service"
+        assert name == "shuozi.service"
         assert path == legacy
         assert is_system is False
         assert gateway_cli.has_legacy_hermes_units() is True
 
     def test_detects_legacy_hermes_service_in_system_scope(self, tmp_path, monkeypatch):
         _, system_dir = self._setup_search_paths(tmp_path, monkeypatch)
-        legacy = system_dir / "hermes.service"
+        legacy = system_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         results = gateway_cli._find_legacy_hermes_units()
 
         assert len(results) == 1
         name, path, is_system = results[0]
-        assert name == "hermes.service"
+        assert name == "shuozi.service"
         assert path == legacy
         assert is_system is True
 
@@ -2302,11 +2302,11 @@ class TestLegacyHermesUnitDetection:
     def test_ignores_unrelated_hermes_service(self, tmp_path, monkeypatch):
         """Third-party ``hermes.service`` that isn't ours stays untouched.
 
-        If a user has some other package named ``hermes`` installed as a
+        If a user has some other package named ``shuozi`` installed as a
         service, we must not flag it.
         """
         user_dir, _ = self._setup_search_paths(tmp_path, monkeypatch)
-        (user_dir / "hermes.service").write_text(
+        (user_dir / "shuozi.service").write_text(
             "[Unit]\nDescription=Some Other Hermes\n[Service]\n"
             "ExecStart=/opt/other-hermes/bin/daemon --foreground\n",
             encoding="utf-8",
@@ -2327,8 +2327,8 @@ class TestLegacyHermesUnitDetection:
         """When a user has BOTH user-scope and system-scope legacy units,
         both are reported so the migration step can remove them together."""
         user_dir, system_dir = self._setup_search_paths(tmp_path, monkeypatch)
-        (user_dir / "hermes.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
-        (system_dir / "hermes.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
+        (user_dir / "shuozi.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
+        (system_dir / "shuozi.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         results = gateway_cli._find_legacy_hermes_units()
 
@@ -2352,9 +2352,9 @@ class TestLegacyHermesUnitDetection:
             "ExecStart=/venv/bin/python /opt/hermes/gateway/run.py",
         ]
         for i, execstart in enumerate(variants):
-            name = f"hermes.service" if i == 0 else f"hermes.service"  # same name
+            name = f"shuozi.service" if i == 0 else f"shuozi.service"  # same name
             # Test each variant fresh
-            (user_dir / "hermes.service").write_text(
+            (user_dir / "shuozi.service").write_text(
                 f"[Unit]\nDescription=Old Hermes\n[Service]\n{execstart}\n",
                 encoding="utf-8",
             )
@@ -2371,19 +2371,19 @@ class TestLegacyHermesUnitDetection:
 
     def test_print_legacy_unit_warning_shows_migration_hint(self, tmp_path, monkeypatch, capsys):
         user_dir, _ = self._setup_search_paths(tmp_path, monkeypatch)
-        (user_dir / "hermes.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
+        (user_dir / "shuozi.service").write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         gateway_cli.print_legacy_unit_warning()
         out = capsys.readouterr().out
 
         assert "Legacy" in out
-        assert "hermes.service" in out
+        assert "shuozi.service" in out
         assert "shuozi gateway migrate-legacy" in out
 
     def test_handles_unreadable_unit_file_gracefully(self, tmp_path, monkeypatch):
         """A permission error reading a unit file must not crash detection."""
         user_dir, _ = self._setup_search_paths(tmp_path, monkeypatch)
-        unreadable = user_dir / "hermes.service"
+        unreadable = user_dir / "shuozi.service"
         unreadable.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
         # Simulate a read failure — monkeypatch Path.read_text to raise
         original_read_text = gateway_cli.Path.read_text
@@ -2441,7 +2441,7 @@ class TestRemoveLegacyHermesUnits:
 
     def test_dry_run_lists_without_removing(self, tmp_path, monkeypatch, capsys):
         user_dir, _, calls = self._setup(tmp_path, monkeypatch)
-        legacy = user_dir / "hermes.service"
+        legacy = user_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         removed, remaining = gateway_cli.remove_legacy_hermes_units(
@@ -2457,7 +2457,7 @@ class TestRemoveLegacyHermesUnits:
 
     def test_removes_user_scope_legacy_unit(self, tmp_path, monkeypatch, capsys):
         user_dir, _, calls = self._setup(tmp_path, monkeypatch)
-        legacy = user_dir / "hermes.service"
+        legacy = user_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         removed, remaining = gateway_cli.remove_legacy_hermes_units(interactive=False)
@@ -2473,7 +2473,7 @@ class TestRemoveLegacyHermesUnits:
 
     def test_system_scope_without_root_defers_removal(self, tmp_path, monkeypatch, capsys):
         _, system_dir, calls = self._setup(tmp_path, monkeypatch, as_root=False)
-        legacy = system_dir / "hermes.service"
+        legacy = system_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         removed, remaining = gateway_cli.remove_legacy_hermes_units(interactive=False)
@@ -2486,7 +2486,7 @@ class TestRemoveLegacyHermesUnits:
 
     def test_system_scope_with_root_removes(self, tmp_path, monkeypatch, capsys):
         _, system_dir, calls = self._setup(tmp_path, monkeypatch, as_root=True)
-        legacy = system_dir / "hermes.service"
+        legacy = system_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         removed, remaining = gateway_cli.remove_legacy_hermes_units(interactive=False)
@@ -2505,8 +2505,8 @@ class TestRemoveLegacyHermesUnits:
 
     def test_removes_both_scopes_with_root(self, tmp_path, monkeypatch, capsys):
         user_dir, system_dir, _ = self._setup(tmp_path, monkeypatch, as_root=True)
-        user_legacy = user_dir / "hermes.service"
-        system_legacy = system_dir / "hermes.service"
+        user_legacy = user_dir / "shuozi.service"
+        system_legacy = system_dir / "shuozi.service"
         user_legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
         system_legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
@@ -2540,7 +2540,7 @@ class TestRemoveLegacyHermesUnits:
     def test_interactive_prompt_no_skips_removal(self, tmp_path, monkeypatch, capsys):
         """When interactive=True and user answers no, no removal happens."""
         user_dir, _, _ = self._setup(tmp_path, monkeypatch)
-        legacy = user_dir / "hermes.service"
+        legacy = user_dir / "shuozi.service"
         legacy.write_text(self._OUR_UNIT_TEXT, encoding="utf-8")
 
         monkeypatch.setattr(gateway_cli, "prompt_yes_no", lambda *a, **k: False)

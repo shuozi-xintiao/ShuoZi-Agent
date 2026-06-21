@@ -914,7 +914,7 @@ class TestRenameProfile:
         honcho_path = tmp_path / ".hermes" / "honcho.json"
         honcho_path.write_text(json.dumps({
             "hosts": {
-                "hermes.ssi_health": {
+                "shuozi.ssi_health": {
                     "recallMode": "hybrid",
                     "writeFrequency": "async",
                     "sessionStrategy": "per-session",
@@ -931,7 +931,7 @@ class TestRenameProfile:
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
-        assert "hermes.ssi_health" not in cfg["hosts"]
+        assert "shuozi.ssi_health" not in cfg["hosts"]
         assert cfg["hosts"]["hermes_heimdall"]["aiPeer"] == "ssi_health"
         assert cfg["hosts"]["hermes_heimdall"]["peerName"] == "user-peer"
 
@@ -941,7 +941,7 @@ class TestRenameProfile:
         honcho_path = tmp_path / ".hermes" / "honcho.json"
         honcho_path.write_text(json.dumps({
             "hosts": {
-                "hermes.ssi_health": {"workspace": "shuozi", "enabled": True}
+                "shuozi.ssi_health": {"workspace": "shuozi", "enabled": True}
             }
         }))
 
@@ -949,7 +949,7 @@ class TestRenameProfile:
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
-        assert "hermes.ssi_health" not in cfg["hosts"]
+        assert "shuozi.ssi_health" not in cfg["hosts"]
         assert cfg["hosts"]["hermes_heimdall"]["aiPeer"] == "ssi_health"
         assert cfg["hosts"]["hermes_heimdall"]["workspace"] == "shuozi"
 
@@ -959,7 +959,7 @@ class TestRenameProfile:
         honcho_path = tmp_path / ".hermes" / "honcho.json"
         honcho_path.write_text(json.dumps({
             "hosts": {
-                "hermes.ssi_health": {"aiPeer": "ssi_health"},
+                "shuozi.ssi_health": {"aiPeer": "ssi_health"},
                 "hermes_heimdall": {"aiPeer": "heimdall"},
             }
         }))
@@ -968,7 +968,7 @@ class TestRenameProfile:
             rename_profile("ssi_health", "heimdall")
 
         cfg = json.loads(honcho_path.read_text())
-        assert cfg["hosts"]["hermes.ssi_health"]["aiPeer"] == "ssi_health"
+        assert cfg["hosts"]["shuozi.ssi_health"]["aiPeer"] == "ssi_health"
         assert cfg["hosts"]["hermes_heimdall"]["aiPeer"] == "heimdall"
 
     def test_default_raises_value_error(self, profile_env):

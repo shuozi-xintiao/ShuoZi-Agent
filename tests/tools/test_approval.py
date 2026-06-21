@@ -931,7 +931,7 @@ class TestPgrepKillExpansion:
     """
 
     def test_kill_dollar_pgrep_detected(self):
-        cmd = 'kill -9 $(pgrep -f "hermes.*gateway")'
+        cmd = 'kill -9 $(pgrep -f "shuozi.*gateway")'
         dangerous, _, desc = detect_dangerous_command(cmd)
         assert dangerous is True
         assert "pgrep" in desc.lower()

@@ -131,7 +131,7 @@ async def test_session_crud_and_message_history(adapter, session_db):
         assert create_resp.status == 201
         created = await create_resp.json()
         session_id = created["session"]["id"]
-        assert created["object"] == "hermes.session"
+        assert created["object"] == "shuozi.session"
         assert created["session"]["title"] == "Mobile chat"
 
         session_db.append_message(session_id, "user", "hello from phone")
@@ -165,7 +165,7 @@ async def test_session_crud_and_message_history(adapter, session_db):
         delete_resp = await cli.delete(f"/api/sessions/{session_id}")
         assert delete_resp.status == 200
         deleted = await delete_resp.json()
-        assert deleted == {"object": "hermes.session.deleted", "id": session_id, "deleted": True}
+        assert deleted == {"object": "shuozi.session.deleted", "id": session_id, "deleted": True}
         assert session_db.get_session(session_id) is None
 
 
@@ -203,7 +203,7 @@ async def test_session_fork_uses_current_sessiondb_branch_primitives(adapter, se
         payload = await resp.json()
 
     fork = payload["session"]
-    assert payload["object"] == "hermes.session"
+    assert payload["object"] == "shuozi.session"
     assert fork["id"] != source_id
     assert fork["parent_session_id"] == source_id
     assert fork["title"] == "Alternative"
@@ -232,7 +232,7 @@ async def test_session_chat_loads_history_and_preserves_session_headers(auth_ada
 
     assert resp.headers["X-Hermes-Session-Id"] == session_id
     assert resp.headers["X-Hermes-Session-Key"] == "client-42"
-    assert payload["object"] == "hermes.session.chat.completion"
+    assert payload["object"] == "shuozi.session.chat.completion"
     assert payload["session_id"] == session_id
     assert payload["message"]["role"] == "assistant"
     assert payload["message"]["content"] == "fresh answer"

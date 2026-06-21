@@ -645,7 +645,7 @@ def _live_system_guard(request, monkeypatch):
     # ── Subprocess command-string inspection (whole-line) ──────────
     _SHUOZI_TOKENS = (
         "hermes-gateway",
-        "hermes.service",
+        "shuozi.service",
         "shuozi_cli.main gateway",
         "shuozi_cli/main.py gateway",
         "gateway/run.py",

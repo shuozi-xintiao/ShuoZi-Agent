@@ -398,7 +398,7 @@ def get_config_path() -> Path:
     """Return the path to ``config.yaml`` under SHUOZI_HOME.
 
     Replaces the ``get_shuozi_home() / "config.yaml"`` pattern repeated
-    in 7+ files (skill_utils.py, shuozi_logging.py, hermes_time.py, etc.).
+    in 7+ files (skill_utils.py, shuozi_logging.py, shuozi_time.py, etc.).
     """
     return get_shuozi_home() / "config.yaml"
 

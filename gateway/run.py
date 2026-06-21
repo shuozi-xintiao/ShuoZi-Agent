@@ -1741,7 +1741,7 @@ def _resolve_hermes_bin() -> Optional[list[str]]:
     Tries in order:
     1. ``shutil.which("shuozi")`` — standard PATH lookup
     2. ``sys.executable -m shuozi_cli.main`` — fallback when Hermes is running
-       from a venv/module invocation and the ``hermes`` shim is not on PATH
+       from a venv/module invocation and the ``shuozi`` shim is not on PATH
 
     Returns argv parts ready for quoting/joining, or ``None`` if neither works.
     """

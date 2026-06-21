@@ -16,7 +16,7 @@ Design summary
   bootstrap secret — every other provider key can live in Bitwarden.
 * Pulling secrets is a single ``bws secret list <project_id>
   --output json`` call.  We cache the result in-process for
-  ``cache_ttl_seconds`` so back-to-back ``hermes`` invocations don't
+  ``cache_ttl_seconds`` so back-to-back ``shuozi`` invocations don't
   hammer the API.
 * Failures NEVER block Hermes startup.  Missing binary, no network,
   expired token, etc. all emit a one-line warning and continue with

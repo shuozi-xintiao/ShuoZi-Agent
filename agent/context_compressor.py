@@ -1337,14 +1337,14 @@ Summary generation was unavailable, so this is a best-effort deterministic fallb
 
         # Current date for temporal anchoring (see ## Temporal Anchoring below).
         # Date-only granularity matches system_prompt.py:337 (PR #20451) and the
-        # user's configured timezone via hermes_time.now(). The compaction summary
+        # user's configured timezone via shuozi_time.now(). The compaction summary
         # is a mid-conversation message that is NOT part of the cached prefix, so a
         # date here never affects prompt-cache stability. Resolved defensively —
         # a clock failure must never block compaction.
         try:
-            from shuozi_time import now as _hermes_now
+            from shuozi_time import now as _shuozi_now
 
-            _today_str = _hermes_now().strftime("%Y-%m-%d")
+            _today_str = _shuozi_now().strftime("%Y-%m-%d")
         except Exception:  # pragma: no cover - clock resolution is best-effort
             _today_str = ""
 

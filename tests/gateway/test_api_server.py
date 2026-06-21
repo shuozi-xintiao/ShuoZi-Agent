@@ -659,7 +659,7 @@ class TestCapabilitiesEndpoint:
             resp = await cli.get("/v1/capabilities")
             assert resp.status == 200
             data = await resp.json()
-            assert data["object"] == "hermes.api_server.capabilities"
+            assert data["object"] == "shuozi.api_server.capabilities"
             assert data["platform"] == "shuozi-agent"
             assert data["model"] == "shuozi-agent"
             assert data["auth"]["type"] == "bearer"

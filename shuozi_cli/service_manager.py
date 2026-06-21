@@ -340,7 +340,7 @@ S6_SERVICE_PREFIX = "gateway-"
 _S6_BIN_DIR = "/command"
 
 
-# UID/GID of the in-image ``hermes`` user. Hardcoded to match what
+# UID/GID of the in-image ``shuozi`` user. Hardcoded to match what
 # ``stage2-hook.sh`` enforces (the runtime invariant — see also
 # tests/docker/test_uid_remap.py). The container starts s6-supervise
 # under root and immediately drops to this UID via ``s6-setuidgid``.
@@ -359,7 +359,7 @@ def _seed_supervise_skeleton(svc_dir: Path) -> None:
     ``0700``. It also ``mkfifo``s ``<svc>/supervise/control`` with mode
     ``0600``. Because s6-supervise runs as PID 1's effective UID (root)
     these dirs end up root-owned mode 0700, and an unprivileged client
-    (the ``hermes`` user — UID 10000 — running every ShuoZi runtime
+    (the ``shuozi`` user — UID 10000 — running every ShuoZi runtime
     operation via ``s6-setuidgid``) gets ``EACCES`` on any ``s6-svc``,
     ``s6-svstat``, or ``s6-svwait`` invocation against the slot.
 

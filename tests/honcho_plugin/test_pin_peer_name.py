@@ -868,7 +868,7 @@ class TestProfilePeerUniqueness:
             "apiKey": "k",
             "peerName": "default-user",
             "hosts": {
-                "hermes.partner": {
+                "shuozi.partner": {
                     "peerName": "partner-user",
                     "pinPeerName": True,
                 },
@@ -877,7 +877,7 @@ class TestProfilePeerUniqueness:
         monkeypatch.setenv("SHUOZI_HOME", str(tmp_path / "isolated"))
 
         cfg = HonchoClientConfig.from_global_config(
-            host="hermes.partner", config_path=config_file,
+            host="shuozi.partner", config_path=config_file,
         )
         assert cfg.peer_name == "partner-user"
         assert cfg.pin_peer_name is True

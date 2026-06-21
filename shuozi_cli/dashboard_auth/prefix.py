@@ -68,7 +68,7 @@ def _warn_if_malformed(source: str, raw: str) -> None:
         "scheme behind a reverse proxy.",
         source,
         cleaned,
-        cleaned.split("://")[-1] or "hermes.example.com",
+        cleaned.split("://")[-1] or "shuozi.example.com",
     )
 
 

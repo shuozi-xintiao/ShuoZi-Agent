@@ -690,7 +690,7 @@ class TestPluginHooks:
         mgr.discover_and_load()
 
         assert mgr.invoke_hook("pre_tool_call", tool_name="test", args={}) == [
-            "hermes.observer.v1"
+            "shuozi.observer.v1"
         ]
 
     def test_hook_exception_does_not_propagate(self, tmp_path, monkeypatch):

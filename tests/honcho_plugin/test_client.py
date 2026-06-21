@@ -442,8 +442,8 @@ class TestResolveActiveHost:
             assert resolve_active_host() == "shuozi"
 
     def test_explicit_env_var_wins(self):
-        with patch.dict(os.environ, {"SHUOZI_HONCHO_HOST": "hermes.coder"}):
-            assert resolve_active_host() == "hermes.coder"
+        with patch.dict(os.environ, {"SHUOZI_HONCHO_HOST": "shuozi.coder"}):
+            assert resolve_active_host() == "shuozi.coder"
 
     def test_profile_name_derives_host(self):
         with patch.dict(os.environ, {}, clear=False):
@@ -532,7 +532,7 @@ class TestProfileScopedConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "hosts": {
-                "hermes.dreamer": {"peerName": "dreamer-user"},
+                "shuozi.dreamer": {"peerName": "dreamer-user"},
             },
         }))
         config = HonchoClientConfig.from_global_config(

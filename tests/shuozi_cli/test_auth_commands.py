@@ -90,9 +90,9 @@ def test_auth_add_anthropic_oauth_persists_pool_entry(tmp_path, monkeypatch):
 
     payload = json.loads((tmp_path / "shuozi" / "auth.json").read_text())
     entries = payload["credential_pool"]["anthropic"]
-    entry = next(item for item in entries if item["source"] == "manual:hermes_pkce")
+    entry = next(item for item in entries if item["source"] == "manual:shuozi_pkce")
     assert entry["label"] == "claude@example.com"
-    assert entry["source"] == "manual:hermes_pkce"
+    assert entry["source"] == "manual:shuozi_pkce"
     assert entry["refresh_token"] == "refresh-token"
     assert entry["expires_at_ms"] == 1711234567000
 
@@ -746,7 +746,7 @@ def test_clear_provider_auth_removes_provider_pool_entries(tmp_path, monkeypatch
                         "label": "primary",
                         "auth_type": "oauth",
                         "priority": 0,
-                        "source": "manual:hermes_pkce",
+                        "source": "manual:shuozi_pkce",
                         "access_token": "pool-token",
                     }
                 ],
@@ -1685,8 +1685,8 @@ def test_seed_from_singletons_respects_qwen_suppression(tmp_path, monkeypatch):
     assert active == set()
 
 
-def test_seed_from_singletons_respects_hermes_pkce_suppression(tmp_path, monkeypatch):
-    """anthropic hermes_pkce must not re-seed from ~/.shuozi/.anthropic_oauth.json when suppressed."""
+def test_seed_from_singletons_respects_shuozi_pkce_suppression(tmp_path, monkeypatch):
+    """anthropic shuozi_pkce must not re-seed from ~/.shuozi/.anthropic_oauth.json when suppressed."""
     shuozi_home = tmp_path / "shuozi"
     shuozi_home.mkdir(parents=True, exist_ok=True)
     monkeypatch.setenv("SHUOZI_HOME", str(shuozi_home))
@@ -1696,10 +1696,10 @@ def test_seed_from_singletons_respects_hermes_pkce_suppression(tmp_path, monkeyp
     (shuozi_home / "auth.json").write_text(json.dumps({
         "version": 1,
         "providers": {},
-        "suppressed_sources": {"anthropic": ["hermes_pkce"]},
+        "suppressed_sources": {"anthropic": ["shuozi_pkce"]},
     }))
 
-    # Stub the readers so only hermes_pkce is "available"; claude_code returns None
+    # Stub the readers so only shuozi_pkce is "available"; claude_code returns None
     import agent.anthropic_adapter as aa
     monkeypatch.setattr(aa, "read_shuozi_oauth_credentials", lambda: {
         "accessToken": "tok", "refreshToken": "r", "expiresAt": 9999999999000,
@@ -1709,9 +1709,9 @@ def test_seed_from_singletons_respects_hermes_pkce_suppression(tmp_path, monkeyp
     from agent.credential_pool import _seed_from_singletons
     entries = []
     changed, active = _seed_from_singletons("anthropic", entries)
-    # hermes_pkce suppressed, claude_code returns None → nothing should be seeded
+    # shuozi_pkce suppressed, claude_code returns None → nothing should be seeded
     assert entries == []
-    assert "hermes_pkce" not in active
+    assert "shuozi_pkce" not in active
 
 
 def test_seed_custom_pool_respects_config_suppression(tmp_path, monkeypatch):

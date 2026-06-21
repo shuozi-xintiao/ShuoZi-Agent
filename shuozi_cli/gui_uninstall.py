@@ -145,7 +145,7 @@ def packaged_gui_app_paths() -> "list[Path]":
         data = os.environ.get("XDG_DATA_HOME")
         data_base = Path(data) if data else (home / ".local" / "share")
         paths += [
-            data_base / "applications" / "hermes.desktop",
+            data_base / "applications" / "shuozi.desktop",
             data_base / "applications" / "Hermes.desktop",
         ]
     return paths
