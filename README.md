@@ -10,23 +10,22 @@
 
 ## 下载安装
 
+**Windows / macOS / Linux 通用：**
+
 ```bash
-# Windows / macOS / Linux 通用
 git clone https://github.com/shuozi-xintiao/ShuoZi-Agent.git
 cd ShuoZi-Agent
 uv sync
 uv run shuozi
 ```
 
-> 需要 Python 3.11+ 和 [uv](https://docs.astral.sh/uv/)。详见 [INSTALL.md](INSTALL.md)。
+> 需要 Python 3.11+ · [安装 uv](https://docs.astral.sh/uv/)
 
 ---
 
 **ShuoZi Agent** 是 ShuoZi OS 的原生 AI 智能层——一个具备持续学习能力的自主 AI Agent。它跨会话积累记忆、从经验中自动提炼技能、能调度子 Agent 并行工作、支持定时任务无人值守运行。
 
-无论你用什么模型——OpenAI、Anthropic、DeepSeek、本地模型，或未来 ShuoZi 自研模型——都能即插即用。在终端、桌面 GUI、Telegram 等多平台上无缝衔接。
-
----
+无论你用什么模型——OpenAI、Anthropic、DeepSeek、本地模型，或未来 ShuoZi 自研模型——都能即插即用。
 
 ## 核心能力
 
@@ -39,28 +38,13 @@ uv run shuozi
 | **子 Agent 并行** | 隔离上下文，多任务并行推进 |
 | **模型无关** | DeepSeek / OpenAI / Anthropic / 本地模型 / 未来 ShuoZi 模型皆可 |
 
-## 快速开始
-
-```bash
-# 一行安装（Windows PowerShell）
-iex (irm https://shuozi.ai/install.ps1)
-
-# 启动交互对话
-shuozi
-
-# 指定模型
-shuozi chat --model deepseek-chat --provider deepseek
-```
-
-## 桌面端
-
-ShuoZi Agent 附带完整的 Electron 桌面应用，Windows / macOS / Linux 全平台支持。
+## 桌面 GUI
 
 ```bash
 cd apps/desktop
 npm install
-npm run dev        # 开发模式
-npm run dist:win   # 打包 Windows 安装包
+npm run dev          # 开发模式
+npm run dist:win     # 打包 Windows 安装包（.exe）
 ```
 
 ## 许可证
