@@ -10,13 +10,17 @@
 
 ## 下载安装
 
-**Windows / macOS / Linux 通用：**
+**Windows（一行命令）：**
+
+```powershell
+iex (irm https://raw.githubusercontent.com/shuozi-xintiao/ShuoZi-Agent/master/scripts/install.ps1)
+```
+
+**macOS / Linux：**
 
 ```bash
 git clone https://github.com/shuozi-xintiao/ShuoZi-Agent.git
-cd ShuoZi-Agent
-uv sync
-uv run shuozi
+cd ShuoZi-Agent && uv sync && uv run shuozi
 ```
 
 > 需要 Python 3.11+ · [安装 uv](https://docs.astral.sh/uv/)

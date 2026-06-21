@@ -5,7 +5,7 @@
 # Uses uv for fast Python provisioning and package management.
 #
 # Usage:
-#   iex (irm https://shuozi-agent.nousresearch.com/install.ps1)
+#   iex (irm https://raw.githubusercontent.com/shuozi-xintiao/ShuoZi-Agent/master/scripts/install.ps1)
 #
 # Or download and run with options:
 #   .\install.ps1 -NoVenv -SkipSetup
@@ -23,8 +23,8 @@ param(
     # exact ref.  Precedence: Commit > Tag > Branch.
     [string]$Commit = "",
     [string]$Tag = "",
-    [string]$HermesHome = $(if ($env:SHUOZI_HOME) { $env:SHUOZI_HOME } else { "$env:LOCALAPPDATA\hermes" }),
-    [string]$InstallDir = $(if ($env:SHUOZI_HOME) { "$env:SHUOZI_HOME\shuozi-agent" } else { "$env:LOCALAPPDATA\hermes\shuozi-agent" }),
+    [string]$ShuoziHome = $(if ($env:SHUOZI_HOME) { $env:SHUOZI_HOME } else { "$env:LOCALAPPDATA\shuozi" }),
+    [string]$InstallDir = $(if ($env:SHUOZI_HOME) { "$env:SHUOZI_HOME\shuozi-agent" } else { "$env:LOCALAPPDATA\shuozi\shuozi-agent" }),
 
     # --- Stage protocol (additive; default invocation behaves as before) ----
     # See the "Stage protocol" section near the bottom of the file for the
@@ -245,10 +245,10 @@ function Find-SystemBrowser {
 
 function Write-BrowserEnv {
     param([string]$BrowserPath)
-    if (-not (Test-Path $HermesHome)) {
-        New-Item -ItemType Directory -Force -Path $HermesHome | Out-Null
+    if (-not (Test-Path $ShuoziHome)) {
+        New-Item -ItemType Directory -Force -Path $ShuoziHome | Out-Null
     }
-    $envFile = Join-Path $HermesHome ".env"
+    $envFile = Join-Path $ShuoziHome ".env"
     if (-not (Test-Path $envFile)) {
         Set-Content -Path $envFile -Value "AGENT_BROWSER_EXECUTABLE_PATH=$BrowserPath" -Encoding UTF8
         return
@@ -267,7 +267,7 @@ function Install-AgentBrowser {
     }
 
     Write-Info "Installing agent-browser via npm -g --prefix..."
-    $prefixDir = Join-Path $HermesHome "node"
+    $prefixDir = Join-Path $ShuoziHome "node"
     if (-not (Test-Path $prefixDir)) {
         New-Item -ItemType Directory -Path $prefixDir -Force | Out-Null
     }
@@ -319,11 +319,11 @@ function Install-AgentBrowser {
 # ============================================================================
 
 function Install-Uv {
-    # Hermes owns its own uv at $HermesHome\bin\uv.exe.  Always install there —
+    # Hermes owns its own uv at $ShuoziHome\bin\uv.exe.  Always install there —
     # no PATH probing, no conda guards, no multi-location resolution chains.
-    # The runtime update path (hermes_cli/managed_uv.py) looks in the same
+    # The runtime update path (shuozi_cli/managed_uv.py) looks in the same
     # place, so install.ps1 and `shuozi update` stay in sync.
-    $managedUv = Join-Path $HermesHome "bin\uv.exe"
+    $managedUv = Join-Path $ShuoziHome "bin\uv.exe"
 
     if (Test-Path $managedUv) {
         $script:UvCmd = $managedUv
@@ -332,15 +332,15 @@ function Install-Uv {
         return $true
     }
 
-    Write-Info "Installing managed uv into $HermesHome\bin ..."
-    New-Item -ItemType Directory -Path (Join-Path $HermesHome "bin") -Force | Out-Null
+    Write-Info "Installing managed uv into $ShuoziHome\bin ..."
+    New-Item -ItemType Directory -Path (Join-Path $ShuoziHome "bin") -Force | Out-Null
 
     # UV_INSTALL_DIR tells the astral installer to place the binary
-    # directly into $HermesHome\bin instead of ~/.local/bin.
+    # directly into $ShuoziHome\bin instead of ~/.local/bin.
     $prevEAP = $ErrorActionPreference
     try {
         $ErrorActionPreference = "Continue"
-        $env:UV_INSTALL_DIR = Join-Path $HermesHome "bin"
+        $env:UV_INSTALL_DIR = Join-Path $ShuoziHome "bin"
         powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" 2>&1 | Out-Null
         $ErrorActionPreference = $prevEAP
 
@@ -397,7 +397,7 @@ function Resolve-UvCmd {
     }
 
     # Check the managed location first — this is where Install-Uv puts it.
-    $managedUv = Join-Path $HermesHome "bin\uv.exe"
+    $managedUv = Join-Path $ShuoziHome "bin\uv.exe"
     if (Test-Path $managedUv) {
         $script:UvCmd = $managedUv
         return
@@ -543,7 +543,7 @@ function Install-Git {
       1. Existing ``git`` on PATH -- use it as-is (the common fast path).
       2. Download **PortableGit** from the official git-for-windows GitHub
          release (self-extracting 7z.exe) and unpack it to
-         ``%LOCALAPPDATA%\hermes\git`` -- never touches system Git, never
+         ``%LOCALAPPDATA%\shuozi\git`` -- never touches system Git, never
          requires admin, works even on locked-down machines and machines
          with a broken system Git install.
 
@@ -557,7 +557,7 @@ function Install-Git {
     We deliberately skip winget because it fails badly when the system Git
     install is in a half-installed state (partially registered, or uninstall-
     blocked).  Owning the Hermes copy of Git ourselves is predictable and
-    recoverable: if it ever breaks, ``Remove-Item %LOCALAPPDATA%\hermes\git``
+    recoverable: if it ever breaks, ``Remove-Item %LOCALAPPDATA%\shuozi\git``
     and re-running this installer fully recovers.
 
     After install we locate ``bash.exe`` and persist the path in
@@ -573,10 +573,10 @@ function Install-Git {
         return $true
     }
 
-    # Download PortableGit into $HermesHome\git.  Always works as long as
+    # Download PortableGit into $ShuoziHome\git.  Always works as long as
     # we can reach github.com -- no admin, no winget, no reliance on the
     # user's possibly-broken system Git install.
-    Write-Info "Git not found -- downloading PortableGit to $HermesHome\git\ ..."
+    Write-Info "Git not found -- downloading PortableGit to $ShuoziHome\git\ ..."
     Write-Info "(no admin rights required; isolated from any system Git install)"
 
     try {
@@ -620,7 +620,7 @@ function Install-Git {
         $downloadUrl = "https://github.com/git-for-windows/git/releases/download/$gitTag/$assetName"
         $downloadExt = if ($downloadIsZip) { "zip" } else { "7z.exe" }
         $tmpFile = "$env:TEMP\$assetName"
-        $gitDir = "$HermesHome\git"
+        $gitDir = "$ShuoziHome\git"
 
         Write-Info "Downloading $assetName (Git for Windows $gitVerTag)..."
         Invoke-WebRequest -Uri $downloadUrl -OutFile $tmpFile -UseBasicParsing
@@ -707,10 +707,10 @@ function Set-GitBashEnvVar {
     # this with a system-Git-only installation anyway.
     #
     # Layouts:
-    #   PortableGit (our default): $HermesHome\git\bin\bash.exe
-    #   MinGit (32-bit fallback):  $HermesHome\git\usr\bin\bash.exe
-    $candidates += "$HermesHome\git\bin\bash.exe"       # PortableGit layout (primary)
-    $candidates += "$HermesHome\git\usr\bin\bash.exe"   # MinGit / PortableGit usr\bin fallback
+    #   PortableGit (our default): $ShuoziHome\git\bin\bash.exe
+    #   MinGit (32-bit fallback):  $ShuoziHome\git\usr\bin\bash.exe
+    $candidates += "$ShuoziHome\git\bin\bash.exe"       # PortableGit layout (primary)
+    $candidates += "$ShuoziHome\git\usr\bin\bash.exe"   # MinGit / PortableGit usr\bin fallback
 
     # git.exe on PATH can tell us where the install root is
     $gitCmd = Get-Command git -ErrorAction SilentlyContinue
@@ -775,10 +775,10 @@ function Test-Node {
     }
 
     # Prefer a Hermes-managed Node from a previous run over a too-old system one.
-    $managedNode = "$HermesHome\node\node.exe"
+    $managedNode = "$ShuoziHome\node\node.exe"
     if ((Test-Path $managedNode) -and (Test-NodeVersionOk (& $managedNode --version))) {
         $version = & $managedNode --version
-        $env:Path = "$HermesHome\node;$env:Path"
+        $env:Path = "$ShuoziHome\node;$env:Path"
         Write-Success "Node.js $version found (Hermes-managed)"
         $script:HasNode = $true
         return $true
@@ -790,11 +790,11 @@ function Test-Node {
     # winget install OpenJS.NodeJS.LTS triggers a system-wide MSI install
     # which prompts UAC (the dialog often appears minimized in the taskbar
     # and the install silently waits for consent, looking like a hang).
-    # The portable zip path drops node.exe + npm into $HermesHome\node\
+    # The portable zip path drops node.exe + npm into $ShuoziHome\node\
     # which is user-scoped and identical to how Install-Git handles
     # PortableGit.  Same UX guarantee: works on locked-down enterprise
     # machines with no admin rights.
-    Write-Info "Downloading portable Node.js $NodeVersion to $HermesHome\node\ ..."
+    Write-Info "Downloading portable Node.js $NodeVersion to $ShuoziHome\node\ ..."
     Write-Info "(no admin rights required; isolated from any system Node install)"
     try {
         $arch = Get-WindowsArch
@@ -805,7 +805,7 @@ function Test-Node {
         if ($zipName) {
             $downloadUrl = "${indexUrl}${zipName}"
             $tmpZip = "$env:TEMP\$zipName"
-            $tmpDir = "$env:TEMP\hermes-node-extract"
+            $tmpDir = "$env:TEMP\shuozi-node-extract"
 
             Invoke-WebRequest -Uri $downloadUrl -OutFile $tmpZip -UseBasicParsing
             if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir }
@@ -813,16 +813,16 @@ function Test-Node {
 
             $extractedDir = Get-ChildItem $tmpDir -Directory | Select-Object -First 1
             if ($extractedDir) {
-                if (Test-Path "$HermesHome\node") { Remove-Item -Recurse -Force "$HermesHome\node" }
-                Move-Item $extractedDir.FullName "$HermesHome\node"
+                if (Test-Path "$ShuoziHome\node") { Remove-Item -Recurse -Force "$ShuoziHome\node" }
+                Move-Item $extractedDir.FullName "$ShuoziHome\node"
 
                 # Session PATH so the rest of this run sees node/npm.
-                $env:Path = "$HermesHome\node;$env:Path"
+                $env:Path = "$ShuoziHome\node;$env:Path"
 
                 # Persist to User PATH so fresh shells (and future stages
                 # in cross-process driver mode) see it.  Matches the
                 # pattern Install-Git uses for PortableGit.
-                $nodeDir = "$HermesHome\node"
+                $nodeDir = "$ShuoziHome\node"
                 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
                 $userPathItems = if ($userPath) { $userPath -split ";" } else { @() }
                 if ($userPathItems -notcontains $nodeDir) {
@@ -830,8 +830,8 @@ function Test-Node {
                     [Environment]::SetEnvironmentVariable("Path", ($userPathItems -join ";"), "User")
                 }
 
-                $version = & "$HermesHome\node\node.exe" --version
-                Write-Success "Node.js $version installed to $HermesHome\node\ (portable, user-scoped)"
+                $version = & "$ShuoziHome\node\node.exe" --version
+                Write-Success "Node.js $version installed to $ShuoziHome\node\ (portable, user-scoped)"
                 $script:HasNode = $true
 
                 Remove-Item -Force $tmpZip -ErrorAction SilentlyContinue
@@ -986,7 +986,7 @@ function Install-SystemPackages {
         # present -> happy path, no clutter).
         $pkgLogs = @{}
         foreach ($pkg in $wingetPkgs) {
-            $log = "$env:TEMP\hermes-winget-$($pkg -replace '[^A-Za-z0-9]','_')-$(Get-Random).log"
+            $log = "$env:TEMP\shuozi-winget-$($pkg -replace '[^A-Za-z0-9]','_')-$(Get-Random).log"
             $pkgLogs[$pkg] = $log
             # --source winget pins us to the github-backed source.  Without this,
             # a broken msstore source (cert validation failures like 0x8a15005e
@@ -1171,7 +1171,7 @@ function Install-Repository {
                 # agent-created dirs (e.g. tinker-atropos/) survive too.
                 $statusOut = git -c windows.appendAtomically=false status --porcelain 2>$null
                 if (-not [string]::IsNullOrWhiteSpace(($statusOut -join "`n"))) {
-                    $stashName = "hermes-install-autostash-" + (Get-Date -Format "yyyyMMdd-HHmmss")
+                    $stashName = "shuozi-install-autostash-" + (Get-Date -Format "yyyyMMdd-HHmmss")
                     Write-Info "Local changes detected, stashing before update..."
                     git -c windows.appendAtomically=false stash push --include-untracked -m "$stashName"
                     if ($LASTEXITCODE -eq 0) { $autostashRef = "stash@{0}" }
@@ -1269,7 +1269,7 @@ function Install-Repository {
             } catch {
                 Write-Err "Could not move $InstallDir aside : $_"
                 Write-Info "Close any programs that might be using files in $InstallDir (editors,"
-                Write-Info "terminals, running hermes processes) and try again."
+                Write-Info "terminals, running shuozi processes) and try again."
                 throw
             }
         }
@@ -1487,7 +1487,7 @@ function Install-Dependencies {
         # UV_PROJECT_ENVIRONMENT pins the sync target to our venv\.
         # Without it, modern uv (>=0.5) ignores VIRTUAL_ENV for `sync`
         # and creates a sibling .venv\ inside the repo -- leaving venv\
-        # empty and producing the broken state where `hermes.exe` exists
+        # empty and producing the broken state where `shuozi.exe` exists
         # in the wrong directory and imports fail with ModuleNotFoundError.
         # (Mirrors the same flag in scripts/install.sh::install_deps.)
         $env:UV_PROJECT_ENVIRONMENT = "$InstallDir\venv"
@@ -1583,10 +1583,10 @@ except Exception:
     # Baseline-import gate. Even if a tier reported success above, the
     # actual deps may have landed somewhere other than $InstallDir\venv\
     # (e.g. uv 0.5+ syncing into a sibling .venv\ when UV_PROJECT_ENVIRONMENT
-    # isn't set, leaving venv\ empty and hermes.exe broken with
+    # isn't set, leaving venv\ empty and shuozi.exe broken with
     # `ModuleNotFoundError: No module named 'dotenv'` on first run).
     # We probe via the venv's own python so a misdirected sync is caught
-    # here, not 30 seconds later when the user runs `hermes`.
+    # here, not 30 seconds later when the user runs `shuozi`.
     if (-not $NoVenv) {
         $venvPython = "$InstallDir\venv\Scripts\python.exe"
         if (-not (Test-Path $venvPython)) {
@@ -1652,47 +1652,47 @@ except Exception:
 }
 
 function Set-PathVariable {
-    Write-Info "Setting up hermes command..."
+    Write-Info "Setting up shuozi command..."
     
     if ($NoVenv) {
-        $hermesBin = "$InstallDir"
+        $shuoziBin = "$InstallDir"
     } else {
-        $hermesBin = "$InstallDir\venv\Scripts"
+        $shuoziBin = "$InstallDir\venv\Scripts"
     }
     
-    # Add the venv Scripts dir to user PATH so hermes is globally available
-    # On Windows, the hermes.exe in venv\Scripts\ has the venv Python baked in
+    # Add the venv Scripts dir to user PATH so shuozi is globally available
+    # On Windows, the shuozi.exe in venv\Scripts\ has the venv Python baked in
     $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
     
-    if ($currentPath -notlike "*$hermesBin*") {
+    if ($currentPath -notlike "*$shuoziBin*") {
         [Environment]::SetEnvironmentVariable(
             "Path",
-            "$hermesBin;$currentPath",
+            "$shuoziBin;$currentPath",
             "User"
         )
-        Write-Success "Added to user PATH: $hermesBin"
+        Write-Success "Added to user PATH: $shuoziBin"
     } else {
         Write-Info "PATH already configured"
     }
     
     # Set SHUOZI_HOME so the Python code finds config/data in the right place.
-    # Only needed on Windows where we install to %LOCALAPPDATA%\hermes instead
-    # of the Unix default ~/.hermes
+    # Only needed on Windows where we install to %LOCALAPPDATA%\shuozi instead
+    # of the Unix default ~/.shuozi
     $currentHermesHome = [Environment]::GetEnvironmentVariable("SHUOZI_HOME", "User")
-    if (-not $currentHermesHome -or $currentHermesHome -ne $HermesHome) {
-        [Environment]::SetEnvironmentVariable("SHUOZI_HOME", $HermesHome, "User")
-        Write-Success "Set SHUOZI_HOME=$HermesHome"
+    if (-not $currentHermesHome -or $currentHermesHome -ne $ShuoziHome) {
+        [Environment]::SetEnvironmentVariable("SHUOZI_HOME", $ShuoziHome, "User")
+        Write-Success "Set SHUOZI_HOME=$ShuoziHome"
     }
-    $env:SHUOZI_HOME = $HermesHome
+    $env:SHUOZI_HOME = $ShuoziHome
     
     # Update current session
-    $env:Path = "$hermesBin;$env:Path"
+    $env:Path = "$shuoziBin;$env:Path"
     
     Write-Success "shuozi command ready"
 }
 
 function Write-BootstrapMarker {
-    # Writes $InstallDir\.hermes-bootstrap-complete which tells the Hermes
+    # Writes $InstallDir\.shuozi-bootstrap-complete which tells the Hermes
     # desktop app (apps/desktop/electron/main.cjs) "install.ps1 ran
     # successfully — DON'T trigger the legacy first-launch bootstrap
     # runner."
@@ -1743,7 +1743,7 @@ function Write-BootstrapMarker {
         $pinnedBranch = "main"  # install.ps1's own default for -Branch
     }
 
-    $markerPath = Join-Path $InstallDir ".hermes-bootstrap-complete"
+    $markerPath = Join-Path $InstallDir ".shuozi-bootstrap-complete"
     $marker = [ordered]@{
         schemaVersion = 1
         pinnedCommit  = $pinnedCommit
@@ -1771,20 +1771,20 @@ function Write-BootstrapMarker {
 function Copy-ConfigTemplates {
     Write-Info "Setting up configuration files..."
     
-    # Create the SHUOZI_HOME directory structure ($HermesHome, default %LOCALAPPDATA%\hermes)
-    New-Item -ItemType Directory -Force -Path "$HermesHome\cron" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\sessions" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\logs" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\pairing" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\hooks" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\image_cache" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\audio_cache" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\memories" | Out-Null
-    New-Item -ItemType Directory -Force -Path "$HermesHome\skills" | Out-Null
+    # Create the SHUOZI_HOME directory structure ($ShuoziHome, default %LOCALAPPDATA%\shuozi)
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\cron" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\sessions" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\logs" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\pairing" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\hooks" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\image_cache" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\audio_cache" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\memories" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$ShuoziHome\skills" | Out-Null
 
     
     # Create .env
-    $envPath = "$HermesHome\.env"
+    $envPath = "$ShuoziHome\.env"
     if (-not (Test-Path $envPath)) {
         $examplePath = "$InstallDir\.env.example"
         if (Test-Path $examplePath) {
@@ -1799,7 +1799,7 @@ function Copy-ConfigTemplates {
     }
     
     # Create config.yaml
-    $configPath = "$HermesHome\config.yaml"
+    $configPath = "$ShuoziHome\config.yaml"
     if (-not (Test-Path $configPath)) {
         $examplePath = "$InstallDir\cli-config.yaml.example"
         if (Test-Path $examplePath) {
@@ -1819,7 +1819,7 @@ function Copy-ConfigTemplates {
     # don't control which PowerShell version the user has.  Go direct
     # to .NET with an explicit UTF8Encoding($false) -- BOM-free on every
     # PowerShell version.
-    $soulPath = "$HermesHome\SOUL.md"
+    $soulPath = "$ShuoziHome\SOUL.md"
     if (-not (Test-Path $soulPath)) {
         $soulContent = @"
 # ShuoZi Agent Persona
@@ -1843,22 +1843,22 @@ Delete the contents (or this file) to use the default personality.
         Write-Success "Created $soulPath (edit to customize personality)"
     }
     
-    Write-Success "Configuration directory ready: $HermesHome"
+    Write-Success "Configuration directory ready: $ShuoziHome"
     
-    # Seed bundled skills into $HermesHome\skills (manifest-based, one-time per skill)
-    Write-Info "Syncing bundled skills to $HermesHome\skills ..."
+    # Seed bundled skills into $ShuoziHome\skills (manifest-based, one-time per skill)
+    Write-Info "Syncing bundled skills to $ShuoziHome\skills ..."
     $pythonExe = "$InstallDir\venv\Scripts\python.exe"
     if (Test-Path $pythonExe) {
         try {
             & $pythonExe "$InstallDir\tools\skills_sync.py" 2>$null
-            Write-Success "Skills synced to $HermesHome\skills"
+            Write-Success "Skills synced to $ShuoziHome\skills"
         } catch {
             # Fallback: simple directory copy
             $bundledSkills = "$InstallDir\skills"
-            $userSkills = "$HermesHome\skills"
+            $userSkills = "$ShuoziHome\skills"
             if ((Test-Path $bundledSkills) -and -not (Get-ChildItem $userSkills -Exclude '.bundled_manifest' -ErrorAction SilentlyContinue)) {
                 Copy-Item -Path "$bundledSkills\*" -Destination $userSkills -Recurse -Force -ErrorAction SilentlyContinue
-                Write-Success "Skills copied to $HermesHome\skills"
+                Write-Success "Skills copied to $ShuoziHome\skills"
             }
         }
     }
@@ -1980,7 +1980,7 @@ function Install-NodeDeps {
     # Browser tools
     if (Test-Path "$InstallDir\package.json") {
         Write-Info "Installing Node.js dependencies (browser tools)..."
-        $browserLog = "$env:TEMP\hermes-npm-browser-$(Get-Random).log"
+        $browserLog = "$env:TEMP\shuozi-npm-browser-$(Get-Random).log"
         $browserNpmOk = _Run-NpmInstall "Browser tools" $InstallDir $browserLog $npmExe
 
         # Install Playwright Chromium (mirrors scripts/install.sh behaviour for
@@ -2007,7 +2007,7 @@ function Install-NodeDeps {
                 Write-Warn "npx not found -- cannot install Playwright Chromium."
                 Write-Info "Run manually later: cd `"$InstallDir`"; npx playwright install chromium"
             } else {
-                $pwLog = "$env:TEMP\hermes-playwright-install-$(Get-Random).log"
+                $pwLog = "$env:TEMP\shuozi-playwright-install-$(Get-Random).log"
                 Push-Location $InstallDir
                 # Capture EAP outside the try block so the catch's restore call
                 # always has a meaningful value (see Install-Uv for the full
@@ -2084,7 +2084,7 @@ function Install-NodeDeps {
     $tuiDir = "$InstallDir\ui-tui"
     if (Test-Path "$tuiDir\package.json") {
         Write-Info "Installing TUI dependencies..."
-        $tuiLog = "$env:TEMP\hermes-npm-tui-$(Get-Random).log"
+        $tuiLog = "$env:TEMP\shuozi-npm-tui-$(Get-Random).log"
         [void](_Run-NpmInstall "TUI" $tuiDir $tuiLog $npmExe)
     }
 }
@@ -2151,7 +2151,7 @@ function Install-Desktop {
     # itself, ~150MB), then run `npm run pack` in apps/desktop which
     # produces the unpacked binary at apps/desktop/release/<os>-unpacked/.
     #
-    # The Tauri bootstrap installer's launch_hermes_desktop command
+    # The Tauri bootstrap installer's launch_shuozi_desktop command
     # resolves apps/desktop/release/win-unpacked/Hermes.exe directly,
     # so an "unpacked" build (electron-builder --dir) is enough — we
     # don't need to produce an NSIS/MSI artifact here.
@@ -2265,7 +2265,7 @@ function Install-Desktop {
     # belt-and-suspenders: if the user's environment has them set
     # for some other tool, electron-builder would still try to sign.
     Write-Info "Building desktop app (this takes 1-3 minutes)..."
-    $buildLog = "$env:TEMP\hermes-desktop-build-$(Get-Random).log"
+    $buildLog = "$env:TEMP\shuozi-desktop-build-$(Get-Random).log"
     Push-Location $desktopDir
     $prevEAP = $ErrorActionPreference
     $prevCSCAuto = $env:CSC_IDENTITY_AUTO_DISCOVERY
@@ -2439,7 +2439,7 @@ function New-DesktopShortcuts {
 
 function Install-PlatformSdks {
     # Ensure messaging-platform SDKs matching tokens the user added to
-    # ~/.hermes/.env are importable.  Two problems this solves:
+    # ~/.shuozi/.env are importable.  Two problems this solves:
     #
     # 1. The tiered `uv pip install` cascade above can fall through to a
     #    lower tier when the first fails (common when RL git deps choke),
@@ -2464,7 +2464,7 @@ function Install-PlatformSdks {
         return
     }
 
-    $envPath = "$HermesHome\.env"
+    $envPath = "$ShuoziHome\.env"
     if (-not (Test-Path $envPath)) { return }
     $envLines = Get-Content $envPath -ErrorAction SilentlyContinue
 
@@ -2566,18 +2566,18 @@ function Invoke-SetupWizard {
 
     Push-Location $InstallDir
 
-    # Run hermes setup using the venv Python directly (no activation needed)
+    # Run shuozi setup using the venv Python directly (no activation needed)
     if (-not $NoVenv) {
-        & ".\venv\Scripts\python.exe" -m hermes_cli.main setup
+        & ".\venv\Scripts\python.exe" -m shuozi_cli.main setup
     } else {
-        python -m hermes_cli.main setup
+        python -m shuozi_cli.main setup
     }
 
     Pop-Location
 }
 
 function Start-GatewayIfConfigured {
-    $envPath = "$HermesHome\.env"
+    $envPath = "$ShuoziHome\.env"
     if (-not (Test-Path $envPath)) { return }
 
     $hasMessaging = $false
@@ -2589,14 +2589,14 @@ function Start-GatewayIfConfigured {
 
     if (-not $hasMessaging) { return }
 
-    $hermesCmd = "$InstallDir\venv\Scripts\hermes.exe"
-    if (-not (Test-Path $hermesCmd)) {
-        $hermesCmd = "shuozi"
+    $shuoziCmd = "$InstallDir\venv\Scripts\shuozi.exe"
+    if (-not (Test-Path $shuoziCmd)) {
+        $shuoziCmd = "shuozi"
     }
 
     # If WhatsApp is enabled but not yet paired, run foreground for QR scan
     $whatsappEnabled = $content | Where-Object { $_ -match "^WHATSAPP_ENABLED=true" }
-    $whatsappSession = "$HermesHome\whatsapp\session\creds.json"
+    $whatsappSession = "$ShuoziHome\whatsapp\session\creds.json"
     if ($whatsappEnabled -and -not (Test-Path $whatsappSession)) {
         Write-Host ""
         Write-Info "WhatsApp is enabled but not yet paired."
@@ -2609,7 +2609,7 @@ function Start-GatewayIfConfigured {
             $response = Read-Host "Pair WhatsApp now? [Y/n]"
             if ($response -eq "" -or $response -match "^[Yy]") {
                 try {
-                    & $hermesCmd whatsapp
+                    & $shuoziCmd whatsapp
                 } catch {
                     # Expected after pairing completes
                 }
@@ -2629,7 +2629,7 @@ function Start-GatewayIfConfigured {
     # services on the build agent, etc.).  Treat it like the user declined.
     if ($NonInteractive) {
         Write-Info "Skipping gateway autostart prompt (non-interactive)."
-        Write-Info "Start the gateway later with: hermes gateway"
+        Write-Info "Start the gateway later with: shuozi gateway"
         return
     }
 
@@ -2638,19 +2638,19 @@ function Start-GatewayIfConfigured {
     if ($response -eq "" -or $response -match "^[Yy]") {
         Write-Info "Starting gateway in background..."
         try {
-            $logFile = "$HermesHome\logs\gateway.log"
-            Start-Process -FilePath $hermesCmd -ArgumentList "gateway" `
+            $logFile = "$ShuoziHome\logs\gateway.log"
+            Start-Process -FilePath $shuoziCmd -ArgumentList "gateway" `
                 -RedirectStandardOutput $logFile `
-                -RedirectStandardError "$HermesHome\logs\gateway-error.log" `
+                -RedirectStandardError "$ShuoziHome\logs\gateway-error.log" `
                 -WindowStyle Hidden
             Write-Success "Gateway started! Your bot is now online."
             Write-Info "Logs: $logFile"
             Write-Info "To stop: close the gateway process from Task Manager"
         } catch {
-            Write-Warn "Failed to start gateway. Run manually: hermes gateway"
+            Write-Warn "Failed to start gateway. Run manually: shuozi gateway"
         }
     } else {
-        Write-Info "Skipped. Start the gateway later with: hermes gateway"
+        Write-Info "Skipped. Start the gateway later with: shuozi gateway"
     }
 }
 
@@ -2665,30 +2665,30 @@ function Write-Completion {
     Write-Host "* Your files:" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "   Config:    " -NoNewline -ForegroundColor Yellow
-    Write-Host "$HermesHome\config.yaml"
+    Write-Host "$ShuoziHome\config.yaml"
     Write-Host "   API Keys:  " -NoNewline -ForegroundColor Yellow
-    Write-Host "$HermesHome\.env"
+    Write-Host "$ShuoziHome\.env"
     Write-Host "   Data:      " -NoNewline -ForegroundColor Yellow
-    Write-Host "$HermesHome\cron\, sessions\, logs\"
+    Write-Host "$ShuoziHome\cron\, sessions\, logs\"
     Write-Host "   Code:      " -NoNewline -ForegroundColor Yellow
-    Write-Host "$HermesHome\shuozi-agent\"
+    Write-Host "$ShuoziHome\shuozi-agent\"
     Write-Host ""
     
     Write-Host "---------------------------------------------------------" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "* Commands:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "   hermes              " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi              " -NoNewline -ForegroundColor Green
     Write-Host "Start chatting"
-    Write-Host "   hermes setup        " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi setup        " -NoNewline -ForegroundColor Green
     Write-Host "Configure API keys & settings"
-    Write-Host "   hermes config       " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi config       " -NoNewline -ForegroundColor Green
     Write-Host "View/edit configuration"
-    Write-Host "   hermes config edit  " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi config edit  " -NoNewline -ForegroundColor Green
     Write-Host "Open config in editor"
-    Write-Host "   hermes gateway      " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi gateway      " -NoNewline -ForegroundColor Green
     Write-Host "Start messaging gateway (Telegram, Discord, etc.)"
-    Write-Host "   hermes update       " -NoNewline -ForegroundColor Green
+    Write-Host "   shuozi update       " -NoNewline -ForegroundColor Green
     Write-Host "Update to latest version"
     Write-Host ""
     
