@@ -1,19 +1,19 @@
 """Harness: `docker run <image> gateway run` redirects to supervised mode.
 
-Before the s6 migration, ``docker run nousresearch/hermes-agent gateway
+Before the s6 migration, ``docker run nousresearch/shuozi-agent gateway
 run`` was the standard pattern — the gateway ran as the container's
 main process, container exit code matched gateway exit code, no
 supervision. With s6 as PID 1, the same invocation now auto-redirects
 to the supervised path (`gateway start`) so users get auto-restart on
-crash and a supervised dashboard alongside (when ``HERMES_DASHBOARD=1``).
+crash and a supervised dashboard alongside (when ``SHUOZI_DASHBOARD=1``).
 
 These tests verify the three load-bearing properties of that redirect:
 
   1. The default invocation **does** redirect (container stays up via
      ``sleep infinity`` while s6 supervises ``gateway-default``).
-  2. ``--no-supervise`` / ``HERMES_GATEWAY_NO_SUPERVISE=1`` opts out.
+  2. ``--no-supervise`` / ``SHUOZI_GATEWAY_NO_SUPERVISE=1`` opts out.
   3. The supervised process itself does NOT recurse — the
-     ``HERMES_S6_SUPERVISED_CHILD`` sentinel breaks the loop.
+     ``SHUOZI_S6_SUPERVISED_CHILD`` sentinel breaks the loop.
 
 Every ``docker exec`` runs as ``hermes`` per the conftest module
 docstring; see ``tests/docker/conftest.py`` for rationale.
@@ -134,7 +134,7 @@ def test_gateway_run_no_supervise_flag_preserves_legacy_behavior(
 
     Three positive assertions confirm we took the pre-s6 path:
 
-      * The CMD process is a python ``hermes gateway run`` invocation
+      * The CMD process is a python ``shuozi gateway run`` invocation
         (not ``sleep infinity``).
       * The ``gateway-default`` s6 service slot is NOT created.
       * No supervision-redirect breadcrumb appears in docker logs.
@@ -213,7 +213,7 @@ def test_gateway_run_no_supervise_env_var(
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "HERMES_GATEWAY_NO_SUPERVISE=1",
+         "-e", "SHUOZI_GATEWAY_NO_SUPERVISE=1",
          built_image, "gateway", "run"],
         check=True, capture_output=True, timeout=30,
     )
@@ -237,7 +237,7 @@ def test_gateway_run_no_supervise_env_var(
     )
     if inspect.stdout.strip() == "running":
         assert not _svstat_wants_up(container_name, "gateway-default"), (
-            "HERMES_GATEWAY_NO_SUPERVISE=1: gateway-default has "
+            "SHUOZI_GATEWAY_NO_SUPERVISE=1: gateway-default has "
             "want-state up, implying the redirect dispatched `start` "
             f"despite the env-var opt-out. svstat:\n{_svstat(container_name)!r}"
         )
@@ -246,12 +246,12 @@ def test_gateway_run_no_supervise_env_var(
 def test_supervised_gateway_does_not_recurse(
     built_image: str, container_name: str,
 ) -> None:
-    """The HERMES_S6_SUPERVISED_CHILD sentinel must prevent the
-    supervised ``hermes gateway run`` from re-entering the redirect.
+    """The SHUOZI_S6_SUPERVISED_CHILD sentinel must prevent the
+    supervised ``shuozi gateway run`` from re-entering the redirect.
 
     If recursion happened, every supervised gateway start would itself
     re-dispatch to s6 and exec ``sleep infinity`` — so the supervised
-    gateway slot would never actually run a python ``hermes gateway
+    gateway slot would never actually run a python ``shuozi gateway
     run`` process. The slot would oscillate or settle into a state
     with no python in the supervise tree at all.
 
@@ -267,7 +267,7 @@ def test_supervised_gateway_does_not_recurse(
     )
     time.sleep(6)
 
-    # Count python processes running `hermes gateway run`. If the
+    # Count python processes running `shuozi gateway run`. If the
     # recursion guard fails, s6 would respawn fresh `gateway run`
     # processes on every cycle, leaving multiple Python-process
     # descendants under the gateway-default supervise tree.
@@ -275,7 +275,7 @@ def test_supervised_gateway_does_not_recurse(
     assert r.returncode == 0
     n = int(r.stdout.strip() or 0)
     assert n <= 1, (
-        f"expected at most one supervised python `hermes gateway run` "
+        f"expected at most one supervised python `shuozi gateway run` "
         f"process (the legitimately-supervised gateway); found {n}. "
         f"Recursion guard may have failed. "
         f"ps:\n{_sh(container_name, 'ps -eo pid,ppid,cmd').stdout}"
@@ -305,7 +305,7 @@ def test_supervised_gateway_does_not_recurse(
 def test_dashboard_supervised_when_env_set(
     built_image: str, container_name: str,
 ) -> None:
-    """When ``HERMES_DASHBOARD=1`` is set, ``docker run <image> gateway
+    """When ``SHUOZI_DASHBOARD=1`` is set, ``docker run <image> gateway
     run`` should result in BOTH the gateway and the dashboard being
     supervised by s6 — the dashboard slot was always there but only
     activates with the env var. This is the headline benefit of the
@@ -314,7 +314,7 @@ def test_dashboard_supervised_when_env_set(
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "HERMES_DASHBOARD=1",
+         "-e", "SHUOZI_DASHBOARD=1",
          built_image, "gateway", "run"],
         check=True, capture_output=True, timeout=30,
     )
@@ -334,7 +334,7 @@ def test_supervised_gateway_stdout_reaches_docker_logs(
 ) -> None:
     """The supervised gateway's stdout — including the rich-console
     startup banner — must reach ``docker logs``, not just the rotated
-    log file under ``${HERMES_HOME}/logs/gateways/<profile>/current``.
+    log file under ``${SHUOZI_HOME}/logs/gateways/<profile>/current``.
 
     Without the ``1`` action directive in ``_render_log_run``, s6-log
     swallows the gateway's stdout into the file and ``docker logs``

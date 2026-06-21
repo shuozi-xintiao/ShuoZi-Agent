@@ -1277,7 +1277,7 @@ class LineAdapter(BasePlatformAdapter):
         from trusted internal code, we recheck the resolved path against
         an allowed-roots set before serving. Sources allowed:
         ``tempfile.gettempdir()``, ``/tmp`` (which resolves to
-        ``/private/tmp`` on macOS), and ``HERMES_HOME``. PR #8398.
+        ``/private/tmp`` on macOS), and ``SHUOZI_HOME``. PR #8398.
         """
         from aiohttp import web
 
@@ -1296,8 +1296,8 @@ class LineAdapter(BasePlatformAdapter):
             return web.Response(status=404, text="not found")
 
         try:
-            from hermes_constants import get_hermes_home
-            hermes_home = Path(get_hermes_home()).resolve()
+            from shuozi_constants import get_shuozi_home
+            hermes_home = Path(get_shuozi_home()).resolve()
         except Exception:
             hermes_home = Path.home().joinpath(".hermes").resolve()
 
@@ -1589,7 +1589,7 @@ def interactive_setup() -> None:
     print()
 
     try:
-        from hermes_cli.config import get_env_var, set_env_var
+        from shuozi_cli.config import get_env_var, set_env_var
     except ImportError:
         print("hermes_cli.config not available; set LINE_* vars manually in ~/.hermes/.env")
         return
@@ -1599,7 +1599,7 @@ def interactive_setup() -> None:
         suffix = " [keep current]" if existing else ""
         try:
             if secret:
-                from hermes_cli.secret_prompt import masked_secret_prompt
+                from shuozi_cli.secret_prompt import masked_secret_prompt
                 value = masked_secret_prompt(f"{prompt}{suffix}: ")
             else:
                 value = input(f"{prompt}{suffix}: ").strip()

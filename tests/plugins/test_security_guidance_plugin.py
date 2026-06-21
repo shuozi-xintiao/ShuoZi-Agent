@@ -28,7 +28,7 @@ import pytest
 def _isolate_env(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"
     hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("SHUOZI_HOME", str(hermes_home))
     monkeypatch.delenv("SECURITY_GUIDANCE_BLOCK", raising=False)
     monkeypatch.delenv("SECURITY_GUIDANCE_DISABLE", raising=False)
     yield hermes_home
@@ -323,7 +323,7 @@ class TestPluginDiscovery:
             if k.startswith(("hermes_plugins", "hermes_cli.plugins")):
                 del sys.modules[k]
 
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from shuozi_cli.plugins import _ensure_plugins_discovered
 
         mgr = _ensure_plugins_discovered(force=True)
         loaded = set()

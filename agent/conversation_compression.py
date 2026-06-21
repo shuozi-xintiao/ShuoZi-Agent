@@ -112,7 +112,7 @@ def check_compression_model_feasibility(agent: Any) -> None:
                 msg = (
                     "⚠ No auxiliary LLM provider configured — context "
                     "compression will drop middle turns without a summary. "
-                    "Run `hermes setup` or set OPENROUTER_API_KEY."
+                    "Run `shuozi setup` or set OPENROUTER_API_KEY."
                 )
             agent._compression_warning = msg
             agent._emit_status(msg)
@@ -356,7 +356,7 @@ def compress_context(
     # Probe whether the lock subsystem is actually available on this
     # SessionDB instance.  A process running mismatched module versions
     # (e.g. ``conversation_compression.py`` reloaded after a pull but the
-    # long-lived ``hermes_state.SessionDB`` class still bound to the
+    # long-lived ``shuozi_state.SessionDB`` class still bound to the
     # pre-#34351 version in memory) has the call site but not the method.
     # In that case ``try_acquire_compression_lock`` raises AttributeError —
     # NOT a ``sqlite3.Error`` — so the method's own fail-open guard never
@@ -386,7 +386,7 @@ def compress_context(
                     "compression lock subsystem unavailable for session=%s "
                     "(%s: %s) — proceeding without lock. This usually means a "
                     "stale in-memory module after an update; restart the "
-                    "process (or `hermes update`) to resync.",
+                    "process (or `shuozi update`) to resync.",
                     _lock_sid, type(_lock_err).__name__, _lock_err,
                 )
             _lock_acquired = True  # treat as acquired-but-unlocked; proceed
@@ -514,18 +514,18 @@ def compress_context(
 
                 set_current_session_id(agent.session_id)
             except Exception:
-                os.environ["HERMES_SESSION_ID"] = agent.session_id
+                os.environ["SHUOZI_SESSION_ID"] = agent.session_id
             # The gateway/tools session context (ContextVar + env) and the
             # logging session context are SEPARATE mechanisms. The call above
             # moves the former; the ``[session_id]`` tag on log lines comes
-            # from ``hermes_logging._session_context`` (set once per turn in
+            # from ``shuozi_logging._session_context`` (set once per turn in
             # conversation_loop.py). Without this, post-rotation log lines in
             # the same turn keep the STALE old id while the message/DB/gateway
             # state carry the new one — breaking log correlation exactly at the
             # compaction boundary (see #34089). Guarded separately so a logging
             # failure can never regress the routing update above.
             try:
-                from hermes_logging import set_session_context
+                from shuozi_logging import set_session_context
 
                 set_session_context(agent.session_id)
             except Exception:
@@ -533,7 +533,7 @@ def compress_context(
             agent._session_db_created = False
             agent._session_db.create_session(
                 session_id=agent.session_id,
-                source=agent.platform or os.environ.get("HERMES_SESSION_SOURCE", "cli"),
+                source=agent.platform or os.environ.get("SHUOZI_SESSION_SOURCE", "cli"),
                 model=agent.model,
                 model_config=agent._session_init_model_config,
                 parent_session_id=old_session_id,

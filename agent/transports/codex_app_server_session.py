@@ -52,7 +52,7 @@ _STDERR_TAIL_LINES = 12
 # Permission profile mapping mirrors the docstring in PR proposal:
 # Hermes' tools.terminal.security_mode → Codex's permissions profile id.
 # Defaults if config is missing → workspace-write (matches Codex's own default).
-_HERMES_TO_CODEX_PERMISSION_PROFILE = {
+_SHUOZI_TO_CODEX_PERMISSION_PROFILE = {
     "auto": "workspace-write",
     "approval-required": "read-only-with-approval",
     "unrestricted": "full-access",
@@ -213,8 +213,8 @@ class CodexAppServerSession:
         self._codex_bin = codex_bin
         self._codex_home = codex_home
         self._permission_profile = (
-            permission_profile or _HERMES_TO_CODEX_PERMISSION_PROFILE.get(
-                os.environ.get("HERMES_TERMINAL_SECURITY_MODE", "auto"),
+            permission_profile or _SHUOZI_TO_CODEX_PERMISSION_PROFILE.get(
+                os.environ.get("SHUOZI_TERMINAL_SECURITY_MODE", "auto"),
                 "workspace-write",
             )
         )
@@ -247,9 +247,9 @@ class CodexAppServerSession:
                 codex_bin=self._codex_bin, codex_home=self._codex_home
             )
         self._client.initialize(
-            client_name="hermes",
-            client_title="Hermes Agent",
-            client_version=_get_hermes_version(),
+            client_name="shuozi",
+            client_title="ShuoZi Agent",
+            client_version=_get_shuozi_version(),
         )
         # Permission selection is intentionally NOT sent on thread/start.
         # Two reasons (live-tested against codex 0.130.0):
@@ -833,7 +833,7 @@ def _apply_token_usage_notification(result: TurnResult, note: dict) -> None:
 
 
 def _approval_choice_to_codex_decision(choice: str) -> str:
-    """Map Hermes approval choices onto codex's CommandExecutionApprovalDecision
+    """Map ShuoZi approval choices onto codex's CommandExecutionApprovalDecision
     / FileChangeApprovalDecision wire values.
 
     Hermes returns 'once', 'session', 'always', or 'deny'.
@@ -866,11 +866,11 @@ def _has_turn_aborted_marker(text: str) -> bool:
     return False
 
 
-def _get_hermes_version() -> str:
+def _get_shuozi_version() -> str:
     """Best-effort Hermes version string for codex's userAgent line."""
     try:
         from importlib.metadata import version
 
-        return version("hermes-agent")
+        return version("shuozi-agent")
     except Exception:  # pragma: no cover
         return "0.0.0"

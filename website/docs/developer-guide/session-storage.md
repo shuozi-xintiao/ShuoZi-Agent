@@ -180,7 +180,7 @@ _CHECKPOINT_EVERY_N_WRITES = 50
 ### Initialize
 
 ```python
-from hermes_state import SessionDB
+from shuozi_state import SessionDB
 
 db = SessionDB()                           # Default: ~/.hermes/state.db
 db = SessionDB(db_path=Path("/tmp/test.db"))  # Custom path

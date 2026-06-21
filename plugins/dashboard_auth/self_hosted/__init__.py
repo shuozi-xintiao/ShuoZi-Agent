@@ -76,7 +76,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from hermes_cli.dashboard_auth import (
+from shuozi_cli.dashboard_auth import (
     DashboardAuthProvider,
     InvalidCodeError,
     LoginStart,
@@ -639,7 +639,7 @@ def _load_config_oauth_section() -> dict:
     to ``{}`` so callers can rely on ``.get(...)``.
     """
     try:
-        from hermes_cli.config import cfg_get, load_config
+        from shuozi_cli.config import cfg_get, load_config
 
         cfg = load_config()
     except Exception as exc:  # noqa: BLE001 — broad catch is intentional

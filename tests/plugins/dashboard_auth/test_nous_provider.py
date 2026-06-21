@@ -31,7 +31,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 import plugins.dashboard_auth.nous as nous_plugin
-from hermes_cli.dashboard_auth import (
+from shuozi_cli.dashboard_auth import (
     InvalidCodeError,
     LoginStart,
     ProviderError,

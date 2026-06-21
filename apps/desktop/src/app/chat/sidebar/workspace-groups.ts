@@ -36,7 +36,7 @@ interface Labelable {
  * Disambiguate groups whose basename collides (worktrees all end in the same
  * `apps/desktop`, sibling repos share a folder name, etc.) by walking up the
  * path and prepending parent segments until each colliding label is unique —
- * e.g. `hermes-agent/desktop` vs `hermes-agent-wt-rtl/desktop`. Groups with a
+ * e.g. `shuozi-agent/desktop` vs `shuozi-agent-wt-rtl/desktop`. Groups with a
  * unique basename keep their short label untouched.
  */
 function disambiguateLabels(groups: Labelable[]): void {

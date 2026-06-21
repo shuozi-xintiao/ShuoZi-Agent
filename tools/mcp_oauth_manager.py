@@ -16,7 +16,7 @@ instances and coordinates:
   is warranted.
 
 Replaces what used to be scattered across eight call sites in `mcp_oauth.py`,
-`mcp_tool.py`, and `hermes_cli/mcp_config.py`. This module is the ONLY place
+`mcp_tool.py`, and `shuozi_cli/mcp_config.py`. This module is the ONLY place
 that instantiates the MCP SDK's `OAuthClientProvider` — all other code paths
 go through `get_manager()`.
 
@@ -328,7 +328,7 @@ def _make_hermes_provider_class() -> Optional[type]:
 
 
 # Cached at import time. Tested and used by :class:`MCPOAuthManager`.
-_HERMES_PROVIDER_CLS: Optional[type] = _make_hermes_provider_class()
+_SHUOZI_PROVIDER_CLS: Optional[type] = _make_hermes_provider_class()
 
 
 # ---------------------------------------------------------------------------
@@ -399,7 +399,7 @@ class MCPOAuthManager:
 
         Returns None if the MCP SDK's OAuth support is unavailable.
         """
-        if _HERMES_PROVIDER_CLS is None:
+        if _SHUOZI_PROVIDER_CLS is None:
             logger.warning(
                 "MCP OAuth '%s': SDK auth module unavailable", server_name,
             )
@@ -435,7 +435,7 @@ class MCPOAuthManager:
         client_metadata = _build_client_metadata(cfg)
         _maybe_preregister_client(storage, cfg, client_metadata)
 
-        return _HERMES_PROVIDER_CLS(
+        return _SHUOZI_PROVIDER_CLS(
             server_name=server_name,
             server_url=entry.server_url,
             client_metadata=client_metadata,
@@ -448,8 +448,8 @@ class MCPOAuthManager:
     def remove(self, server_name: str) -> None:
         """Evict the provider from cache AND delete tokens from disk.
 
-        Called by ``hermes mcp remove <name>`` and (indirectly) by
-        ``hermes mcp login <name>`` during forced re-auth.
+        Called by ``shuozi mcp remove <name>`` and (indirectly) by
+        ``shuozi mcp login <name>`` during forced re-auth.
         """
         with self._entries_lock:
             self._entries.pop(server_name, None)

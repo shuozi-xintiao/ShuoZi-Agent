@@ -180,7 +180,7 @@ class DaytonaEnvironment(BaseEnvironment):
         self._sandbox.fs.upload_files(uploads)
 
     def _daytona_bulk_download(self, dest: Path) -> None:
-        """Download remote .hermes/ as a tar archive."""
+        """Download remote .shuozi/ as a tar archive."""
         rel_base = f"{self._remote_home}/.hermes".lstrip("/")
         # PID-suffixed remote temp path avoids collisions if sync_back fires
         # concurrently for the same sandbox (e.g. retry after partial failure).

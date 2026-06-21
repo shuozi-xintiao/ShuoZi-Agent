@@ -1,7 +1,7 @@
-const _READY_RE = /^HERMES_DASHBOARD_READY port=(\d+)/m
+const _READY_RE = /^SHUOZI_DASHBOARD_READY port=(\d+)/m
 
 /**
- * Watch a child process's stdout for the `HERMES_DASHBOARD_READY port=<N>`
+ * Watch a child process's stdout for the `SHUOZI_DASHBOARD_READY port=<N>`
  * line that web_server.py prints after uvicorn binds its socket.
  *
  * Returns the parsed port. Rejects if:

@@ -1029,8 +1029,8 @@ def interactive_setup() -> None:
     ``hermes_cli/setup.py::_setup_mattermost`` function this migration
     removes.
     """
-    from hermes_cli.config import get_env_value, save_env_value
-    from hermes_cli.cli_output import (
+    from shuozi_cli.config import get_env_value, save_env_value
+    from shuozi_cli.cli_output import (
         prompt,
         prompt_yes_no,
         print_header,
@@ -1135,7 +1135,7 @@ def _is_connected(config) -> bool:
     ``gateway_mod.get_env_value`` can suppress ambient env vars.  Matches
     what the legacy connected-platforms check did before this migration.
     """
-    import hermes_cli.gateway as gateway_mod
+    import shuozi_cli.gateway as gateway_mod
     return bool(
         (gateway_mod.get_env_value("MATTERMOST_TOKEN") or "").strip()
         and (gateway_mod.get_env_value("MATTERMOST_URL") or "").strip()

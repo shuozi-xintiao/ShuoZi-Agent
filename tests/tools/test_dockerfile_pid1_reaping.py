@@ -90,7 +90,7 @@ def _instruction_text(dockerfile_text: str) -> str:
 def test_dockerfile_installs_an_init_for_zombie_reaping(dockerfile_text):
     """Some init (tini, dumb-init, catatonit, s6-overlay) must be installed.
 
-    Without a PID-1 init that handles SIGCHLD, hermes accumulates zombie
+    Without a PID-1 init that handles SIGCHLD, shuozi accumulates zombie
     processes from MCP stdio subprocesses, git operations, browser
     daemons, etc.  In long-running Docker deployments this eventually
     exhausts the PID table.
@@ -107,7 +107,7 @@ def test_dockerfile_installs_an_init_for_zombie_reaping(dockerfile_text):
     assert installed, (
         "No PID-1 init detected in Dockerfile instructions (looked for: "
         f"{', '.join(_KNOWN_INIT_TOKENS)}). Without an init process to "
-        "reap orphaned subprocesses, hermes accumulates zombies in Docker "
+        "reap orphaned subprocesses, shuozi accumulates zombies in Docker "
         "deployments. See issue #15012."
     )
 
@@ -135,7 +135,7 @@ def test_dockerfile_entrypoint_routes_through_the_init(dockerfile_text):
     assert routes_through_init, (
         f"ENTRYPOINT does not route through a PID-1 init: {entrypoint_line!r}. "
         f"Expected one of {_KNOWN_INIT_TOKENS}. If the init is installed but "
-        "not wired into ENTRYPOINT, hermes still runs as PID 1 and zombies "
+        "not wired into ENTRYPOINT, shuozi still runs as PID 1 and zombies "
         "will accumulate (#15012)."
     )
 

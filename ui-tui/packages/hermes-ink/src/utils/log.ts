@@ -1,5 +1,5 @@
 export function logError(error: unknown): void {
-  if (!process.env.HERMES_INK_DEBUG_ERRORS) {
+  if (!process.env.SHUOZI_INK_DEBUG_ERRORS) {
     return
   }
 

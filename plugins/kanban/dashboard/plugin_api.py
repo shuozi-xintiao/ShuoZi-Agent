@@ -18,7 +18,7 @@ Plugin HTTP routes go through the dashboard's session-token auth middleware
 ``/api/plugins/...`` request must present the session bearer token (or the
 session cookie set when you load the dashboard HTML). The token is the
 random per-process ``_SESSION_TOKEN`` printed at startup; the dashboard's
-own pages inject it via ``window.__HERMES_SESSION_TOKEN__`` so logged-in
+own pages inject it via ``window.__SHUOZI_SESSION_TOKEN__`` so logged-in
 browsers don't have to handle it manually.
 
 For the ``/events`` WebSocket we still require the session token as a
@@ -48,8 +48,8 @@ from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, Web
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from hermes_cli import kanban_db
-from hermes_cli import kanban_diagnostics as kd
+from shuozi_cli import kanban_db
+from shuozi_cli import kanban_diagnostics as kd
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def _ws_upgrade_authorized(ws: "WebSocket") -> bool:
     the prior behaviour.
     """
     try:
-        from hermes_cli import web_server as _ws
+        from shuozi_cli import web_server as _ws
     except Exception:
         # No dashboard context (tests). Accept so the tail loop is still
         # testable; in production the dashboard module always imports
@@ -256,8 +256,8 @@ def _compute_task_diagnostics(
     Uses ``hermes_cli.kanban_diagnostics`` — see that module for the
     rule definitions.
     """
-    from hermes_cli import kanban_diagnostics as kd
-    from hermes_cli.config import load_config
+    from shuozi_cli import kanban_diagnostics as kd
+    from shuozi_cli.config import load_config
 
     diag_config = kd.config_from_runtime_config(load_config())
 
@@ -325,7 +325,7 @@ def _warnings_summary_from_diagnostics(
     """
     if not diagnostics:
         return None
-    from hermes_cli.kanban_diagnostics import SEVERITY_ORDER
+    from shuozi_cli.kanban_diagnostics import SEVERITY_ORDER
 
     kinds: dict[str, int] = {}
     latest = 0
@@ -393,7 +393,7 @@ def get_board(
     install doesn't surface a "failed to load" error on the plugin tab.
 
     ``board`` selects which board to read from. Omitting it falls
-    through to the active board (``HERMES_KANBAN_BOARD`` env → on-disk
+    through to the active board (``SHUOZI_KANBAN_BOARD`` env → on-disk
     ``current`` pointer → ``default``).
     """
     board = _resolve_board(board)
@@ -626,7 +626,7 @@ def create_task(payload: CreateTaskBody, board: Optional[str] = Query(None)):
         # and unassigned tasks can't be dispatched regardless.
         if task and task.status == "ready" and task.assignee:
             try:
-                from hermes_cli.kanban import _check_dispatcher_presence
+                from shuozi_cli.kanban import _check_dispatcher_presence
                 running, message = _check_dispatcher_presence()
                 if not running and message:
                     body["warning"] = message
@@ -1320,7 +1320,7 @@ def list_diagnostics(
                 "diagnostics": dl,
             })
         # Sort: highest severity first, then most recent.
-        from hermes_cli.kanban_diagnostics import SEVERITY_ORDER
+        from shuozi_cli.kanban_diagnostics import SEVERITY_ORDER
         sev_idx = {s: i for i, s in enumerate(SEVERITY_ORDER)}
         def _sort_key(row):
             top = row["diagnostics"][0]
@@ -1621,13 +1621,13 @@ def specify_task_endpoint(
     # Pin the board for the duration of this call so the specifier module
     # (which calls ``kb.connect()`` with no args) hits the right DB. Use a
     # context-local override rather than mutating the process-global
-    # HERMES_KANBAN_BOARD env var — this endpoint runs in FastAPI's
+    # SHUOZI_KANBAN_BOARD env var — this endpoint runs in FastAPI's
     # threadpool, so two concurrent requests for different boards would
     # otherwise race on the shared env var and cross-write (issue #38323).
     with kanban_db.scoped_current_board(board or kanban_db.DEFAULT_BOARD):
         # Import lazily so a missing auxiliary client at import time
         # doesn't break plugin load.
-        from hermes_cli import kanban_specify  # noqa: WPS433 (intentional)
+        from shuozi_cli import kanban_specify  # noqa: WPS433 (intentional)
 
         outcome = kanban_specify.specify_task(
             task_id,
@@ -1696,7 +1696,7 @@ def get_config():
     or set column-width preferences without a round-trip per page load.
     """
     try:
-        from hermes_cli.config import load_config
+        from shuozi_cli.config import load_config
         cfg = load_config() or {}
     except Exception:
         cfg = {}
@@ -1761,7 +1761,7 @@ def _configured_home_channels() -> list[dict]:
 def _active_profile_name() -> str:
     """Return the current Hermes profile name for notify-sub ownership."""
     try:
-        from hermes_cli.profiles import get_active_profile_name
+        from shuozi_cli.profiles import get_active_profile_name
         return get_active_profile_name() or "default"
     except Exception:
         return "default"
@@ -2122,7 +2122,7 @@ def list_profile_roster():
     just less precisely.
     """
     try:
-        from hermes_cli import profiles as profiles_mod
+        from shuozi_cli import profiles as profiles_mod
         profiles = profiles_mod.list_profiles()
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"failed to list profiles: {exc}")
@@ -2152,12 +2152,12 @@ def update_profile_description(profile_name: str, payload: DescribeBody):
     ``--overwrite``.
     """
     try:
-        from hermes_cli import profiles as profiles_mod
+        from shuozi_cli import profiles as profiles_mod
         canon = profiles_mod.normalize_profile_name(profile_name)
         if canon == "default":
-            from hermes_constants import get_hermes_home  # type: ignore
+            from shuozi_constants import get_shuozi_home  # type: ignore
             from pathlib import Path as _Path
-            profile_dir = _Path(get_hermes_home())
+            profile_dir = _Path(get_shuozi_home())
         else:
             profile_dir = profiles_mod.get_profile_dir(canon)
         if not profile_dir.is_dir():
@@ -2188,7 +2188,7 @@ def auto_describe_profile(profile_name: str, payload: DescribeAutoBody):
     config and retry without a page reload.
     """
     try:
-        from hermes_cli import profile_describer  # noqa: WPS433 (intentional)
+        from shuozi_cli import profile_describer  # noqa: WPS433 (intentional)
         outcome = profile_describer.describe_profile(
             profile_name,
             overwrite=bool(payload.overwrite),
@@ -2231,10 +2231,10 @@ def decompose_task_endpoint(
     board = _resolve_board(board)
     # Context-local board pin (see specify endpoint above): this sync
     # endpoint runs in FastAPI's threadpool, so mutating the process-global
-    # HERMES_KANBAN_BOARD env var would let concurrent requests for
+    # SHUOZI_KANBAN_BOARD env var would let concurrent requests for
     # different boards race and cross-write (issue #38323).
     with kanban_db.scoped_current_board(board or kanban_db.DEFAULT_BOARD):
-        from hermes_cli import kanban_decompose  # noqa: WPS433 (intentional)
+        from shuozi_cli import kanban_decompose  # noqa: WPS433 (intentional)
         outcome = kanban_decompose.decompose_task(
             task_id,
             author=(payload.author or None),
@@ -2267,7 +2267,7 @@ def get_orchestration_settings():
     """Return the current kanban orchestration knobs from config.yaml
     plus the resolved effective values (filling in fallbacks)."""
     try:
-        from hermes_cli.config import load_config
+        from shuozi_cli.config import load_config
         cfg = load_config() or {}
     except Exception:
         cfg = {}
@@ -2281,7 +2281,7 @@ def get_orchestration_settings():
     resolved_orch = explicit_orch
     resolved_default = explicit_default
     try:
-        from hermes_cli import profiles as profiles_mod
+        from shuozi_cli import profiles as profiles_mod
         active_default = profiles_mod.get_active_profile_name() or "default"
         if not resolved_orch or not profiles_mod.profile_exists(resolved_orch):
             resolved_orch = active_default
@@ -2315,7 +2315,7 @@ def set_orchestration_settings(payload: OrchestrationSettingsBody):
     profile.
     """
     try:
-        from hermes_cli.config import load_config, save_config
+        from shuozi_cli.config import load_config, save_config
         cfg = load_config() or {}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"failed to load config: {exc}")
@@ -2327,7 +2327,7 @@ def set_orchestration_settings(payload: OrchestrationSettingsBody):
 
     # Validate any non-empty profile names exist before saving.
     try:
-        from hermes_cli import profiles as profiles_mod
+        from shuozi_cli import profiles as profiles_mod
     except Exception:
         profiles_mod = None  # type: ignore
 

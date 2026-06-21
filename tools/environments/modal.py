@@ -14,7 +14,7 @@ import threading
 from pathlib import Path
 from typing import Any, Optional
 
-from hermes_constants import get_hermes_home
+from shuozi_constants import get_shuozi_home
 from tools.environments.base import (
     BaseEnvironment,
     _ThreadedProcessHandle,
@@ -31,7 +31,7 @@ from tools.environments.file_sync import (
 
 logger = logging.getLogger(__name__)
 
-_SNAPSHOT_STORE = get_hermes_home() / "modal_snapshots.json"
+_SNAPSHOT_STORE = get_shuozi_home() / "modal_snapshots.json"
 _DIRECT_SNAPSHOT_NAMESPACE = "direct"
 
 
@@ -239,7 +239,7 @@ class ModalEnvironment(BaseEnvironment):
         self._worker.start()
 
         async def _create_sandbox(image_spec: Any):
-            app = await _modal.App.lookup.aio("hermes-agent", create_if_missing=True)
+            app = await _modal.App.lookup.aio("shuozi-agent", create_if_missing=True)
             create_kwargs = dict(sandbox_kwargs)
             if cred_mounts:
                 existing_mounts = list(create_kwargs.pop("mounts", []))
@@ -367,7 +367,7 @@ class ModalEnvironment(BaseEnvironment):
         self._worker.run_coroutine(_bulk(), timeout=120)
 
     def _modal_bulk_download(self, dest: Path) -> None:
-        """Download remote .hermes/ as a tar archive.
+        """Download remote .shuozi/ as a tar archive.
 
         Modal sandboxes always run as root, so /root/.hermes is hardcoded
         (consistent with iter_sync_files call on line 269).

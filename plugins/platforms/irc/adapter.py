@@ -541,7 +541,7 @@ def interactive_setup() -> None:
     Lazy-imports ``hermes_cli.setup`` helpers so the plugin stays importable
     in non-CLI contexts (gateway runtime, tests).
     """
-    from hermes_cli.setup import (
+    from shuozi_cli.setup import (
         prompt,
         prompt_yes_no,
         save_env_value,

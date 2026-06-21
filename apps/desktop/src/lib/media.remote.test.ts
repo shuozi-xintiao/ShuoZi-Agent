@@ -27,7 +27,7 @@ describe('isRemoteGateway', () => {
 
 describe('filePathFromMediaPath', () => {
   it('passes through a plain path', () => {
-    expect(filePathFromMediaPath('/home/u/.hermes/images/a.png')).toBe('/home/u/.hermes/images/a.png')
+    expect(filePathFromMediaPath('/home/u/.shuozi/images/a.png')).toBe('/home/u/.shuozi/images/a.png')
   })
 
   it('decodes a file:// URL with encoded characters', () => {
@@ -48,7 +48,7 @@ describe('gatewayMediaDataUrl', () => {
   })
 
   it('requests the encoded gateway path and returns the data URL', async () => {
-    const url = await gatewayMediaDataUrl('/home/u/.hermes/images/a b.png')
+    const url = await gatewayMediaDataUrl('/home/u/.shuozi/images/a b.png')
 
     expect(url).toBe('data:image/png;base64,ZHVtbXk=')
     expect(api).toHaveBeenCalledWith({

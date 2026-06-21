@@ -4,12 +4,12 @@
  * Cheap "does this candidate backend actually work" checks used by
  * resolveHermesBackend (main.cjs). The resolver walks a ladder of
  * candidates -- bootstrap marker, `hermes` on PATH, system Python with
- * hermes_cli installed -- and historically returned the first candidate
+ * shuozi_cli installed -- and historically returned the first candidate
  * whose binary existed on disk. That assumption breaks when a user has
  * a pre-installed Python 3.11-3.13 (so findSystemPython() returns a
- * path) but no hermes_cli in its site-packages: the resolver hands back
+ * path) but no shuozi_cli in its site-packages: the resolver hands back
  * a backend the spawn step can't actually run, and the user gets a
- * dead-on-arrival "ModuleNotFoundError: No module named 'hermes_cli'"
+ * dead-on-arrival "ModuleNotFoundError: No module named 'shuozi_cli'"
  * instead of the first-launch installer.
  *
  * These probes give the resolver a way to verify a candidate before
@@ -37,22 +37,22 @@ const { execFileSync } = require('node:child_process')
 const PROBE_TIMEOUT_MS = 5000
 
 /**
- * Return true iff `python -c "import hermes_cli"` exits 0.
+ * Return true iff `python -c "import shuozi_cli"` exits 0.
  *
- * Used to gate the "fallback to system Python with hermes_cli installed"
+ * Used to gate the "fallback to system Python with shuozi_cli installed"
  * rung of resolveHermesBackend. Without this, a system Python 3.11-3.13
  * registered in PEP 514 makes findSystemPython() succeed regardless of
- * whether hermes_cli has actually been pip-installed into its
+ * whether shuozi_cli has actually been pip-installed into its
  * site-packages -- and the resolver returns a backend that immediately
  * dies on spawn.
  *
  * @param {string} pythonPath - Absolute path to a python.exe / python.
  * @returns {boolean}
  */
-function canImportHermesCli(pythonPath) {
+function canImportShuoziCli(pythonPath) {
   if (!pythonPath) return false
   try {
-    execFileSync(pythonPath, ['-c', 'import hermes_cli'], {
+    execFileSync(pythonPath, ['-c', 'import shuozi_cli'], {
       stdio: 'ignore',
       timeout: PROBE_TIMEOUT_MS,
       windowsHide: true
@@ -73,7 +73,7 @@ function canImportHermesCli(pythonPath) {
  *
  * We intentionally avoid invoking the command with the dashboard args
  * here -- `--version` is the cheapest "is this binary alive" smoke
- * test that every hermes_cli entry-point has supported since 0.1.
+ * test that every shuozi_cli entry-point has supported since 0.1.
  *
  * @param {string} hermesCommand - Resolved absolute path to a hermes
  *   executable (or an interpreter+script wrapper).
@@ -84,7 +84,7 @@ function canImportHermesCli(pythonPath) {
  *   in resolveHermesBackend.
  * @returns {boolean}
  */
-function verifyHermesCli(hermesCommand, opts = {}) {
+function verifyShuoziCli(hermesCommand, opts = {}) {
   if (!hermesCommand) return false
   try {
     execFileSync(hermesCommand, ['--version'], {
@@ -100,7 +100,7 @@ function verifyHermesCli(hermesCommand, opts = {}) {
 }
 
 module.exports = {
-  canImportHermesCli,
-  verifyHermesCli,
+  canImportShuoziCli,
+  verifyShuoziCli,
   PROBE_TIMEOUT_MS
 }

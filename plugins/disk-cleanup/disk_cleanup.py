@@ -10,12 +10,12 @@ Rules:
   - test files    → delete immediately at task end (age >= 0)
   - temp files    → delete after 7 days
   - cron-output   → delete after 14 days
-  - empty dirs    → always delete (under HERMES_HOME)
+  - empty dirs    → always delete (under SHUOZI_HOME)
   - research      → keep 10 newest, prompt for older (deep only)
   - chrome-profile→ prompt after 14 days (deep only)
   - >500 MB files → prompt always (deep only)
 
-Scope: strictly HERMES_HOME and /tmp/hermes-*
+Scope: strictly SHUOZI_HOME and /tmp/hermes-*
 Never touches: ~/.hermes/logs/ or any system directory.
 """
 
@@ -29,12 +29,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from hermes_constants import get_hermes_home
+    from shuozi_constants import get_shuozi_home
 except Exception:  # pragma: no cover — plugin may load before constants resolves
     import os
 
-    def get_hermes_home() -> Path:  # type: ignore[no-redef]
-        val = (os.environ.get("HERMES_HOME") or "").strip()
+    def get_shuozi_home() -> Path:  # type: ignore[no-redef]
+        val = (os.environ.get("SHUOZI_HOME") or "").strip()
         return Path(val).resolve() if val else (Path.home() / ".hermes").resolve()
 
 
@@ -46,8 +46,8 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def get_state_dir() -> Path:
-    """State dir — separate from ``$HERMES_HOME/logs/``."""
-    return get_hermes_home() / "disk-cleanup"
+    """State dir — separate from ``$SHUOZI_HOME/logs/``."""
+    return get_shuozi_home() / "disk-cleanup"
 
 
 def get_tracked_file() -> Path:
@@ -55,7 +55,7 @@ def get_tracked_file() -> Path:
 
 
 def get_log_file() -> Path:
-    """Audit log — intentionally NOT under ``$HERMES_HOME/logs/``."""
+    """Audit log — intentionally NOT under ``$SHUOZI_HOME/logs/``."""
     return get_state_dir() / "cleanup.log"
 
 
@@ -64,11 +64,11 @@ def get_log_file() -> Path:
 # ---------------------------------------------------------------------------
 
 def is_safe_path(path: Path) -> bool:
-    """Accept only paths under HERMES_HOME or ``/tmp/hermes-*``.
+    """Accept only paths under SHUOZI_HOME or ``/tmp/hermes-*``.
 
     Rejects Windows mounts (``/mnt/c`` etc.) and any system directory.
     """
-    hermes_home = get_hermes_home()
+    hermes_home = get_shuozi_home()
     try:
         path.resolve().relative_to(hermes_home)
         return True
@@ -145,7 +145,7 @@ ALLOWED_CATEGORIES = {
 }
 
 
-# Paths under $HERMES_HOME that must NEVER be deleted by quick(),
+# Paths under $SHUOZI_HOME that must NEVER be deleted by quick(),
 # regardless of what the stored category says.  This is a defense-in-depth
 # guard against stale tracked.json entries from before #34840.
 _PROTECTED_CRON_PATHS: set[str] = set()
@@ -159,10 +159,10 @@ def _is_protected_cron_path(p: Path) -> bool:
     (``jobs.json``, ``.tick.lock``) — it does NOT blanket-protect
     everything under ``cron/`` because ``cron/output/`` is disposable.
     """
-    # Lazily build the set once per process so HERMES_HOME is resolved
+    # Lazily build the set once per process so SHUOZI_HOME is resolved
     # exactly once.
     if not _PROTECTED_CRON_PATHS:
-        hermes_home = get_hermes_home()
+        hermes_home = get_shuozi_home()
         for parent in ("cron", "cronjobs"):
             base = hermes_home / parent
             _PROTECTED_CRON_PATHS.add(str(base))
@@ -197,7 +197,7 @@ def track(path_str: str, category: str, silent: bool = False) -> bool:
         return False
 
     if not is_safe_path(path):
-        _log(f"REJECT: {path} (outside HERMES_HOME)")
+        _log(f"REJECT: {path} (outside SHUOZI_HOME)")
         return False
 
     size = path.stat().st_size if path.is_file() else 0
@@ -348,10 +348,10 @@ def quick() -> Dict[str, Any]:
         else:
             new_tracked.append(item)
 
-    # Remove empty dirs under HERMES_HOME (but leave HERMES_HOME itself and
+    # Remove empty dirs under SHUOZI_HOME (but leave SHUOZI_HOME itself and
     # a short list of well-known top-level state dirs alone — a fresh install
     # has these empty, and deleting them would surprise the user).
-    hermes_home = get_hermes_home()
+    hermes_home = get_shuozi_home()
     _PROTECTED_TOP_LEVEL = {
         "logs", "memories", "sessions", "cron", "cronjobs",
         "cache", "skills", "plugins", "disk-cleanup", "optional-skills",
@@ -527,7 +527,7 @@ def guess_category(path: Path) -> Optional[str]:
         return None
 
     # Skip the state dir itself, logs, memory files, sessions, config.
-    hermes_home = get_hermes_home()
+    hermes_home = get_shuozi_home()
     try:
         rel = path.resolve().relative_to(hermes_home)
         top = rel.parts[0] if rel.parts else ""
@@ -549,7 +549,7 @@ def guess_category(path: Path) -> Optional[str]:
         if top == "cache":
             return "temp"
     except ValueError:
-        # Path isn't under HERMES_HOME (e.g. /tmp/hermes-*) — fall through.
+        # Path isn't under SHUOZI_HOME (e.g. /tmp/hermes-*) — fall through.
         pass
 
     name = path.name

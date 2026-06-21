@@ -8,13 +8,13 @@ guidance, while still allowing:
 Background: in the tini era `docker run --user $(id -u):$(id -g)` was used to
 make container-written files match the host user. Under s6-overlay this can't
 work — the bootstrap (UID remap, volume/build-tree chown, config seeding) needs
-root, and the baked image dirs are owned by the hermes build UID, so an
+root, and the baked image dirs are owned by the shuozi build UID, so an
 arbitrary pinned UID can't write them (EACCES on a bind mount, hard crash on a
-named volume). The supported path is root start + HERMES_UID/HERMES_GID (or the
-PUID/PGID aliases), which remaps the hermes user and chowns the volume.
+named volume). The supported path is root start + SHUOZI_UID/SHUOZI_GID (or the
+PUID/PGID aliases), which remaps the shuozi user and chowns the volume.
 
-The guard fires only when the current UID is neither root NOR the hermes UID,
-so the #34648 `--user 10000:10000` case (pinning to the hermes UID itself) is
+The guard fires only when the current UID is neither root NOR the shuozi UID,
+so the #34648 `--user 10000:10000` case (pinning to the shuozi UID itself) is
 unaffected.
 
 Extraction + stubbed-shell-run mirrors
@@ -60,7 +60,7 @@ def test_guard_present_and_mentions_remediation(path: Path) -> None:
     assert '"$cur_uid" != "$(id -u hermes)"' in block
     assert "exit 1" in block
     # Must point users at the supported env vars.
-    assert "HERMES_UID" in block and "HERMES_GID" in block
+    assert "SHUOZI_UID" in block and "SHUOZI_GID" in block
     assert "PUID" in block and "PGID" in block
 
 
@@ -75,7 +75,7 @@ def _run_guard(text: str, *, cur_uid: int, hermes_uid: int = 10000) -> subproces
         script = (
             "set -e\n"
             # Stub `id`: `id -u` -> cur_uid; `id -u hermes` -> hermes_uid.
-            f'id() {{ if [ "$2" = hermes ]; then echo {hermes_uid}; else echo {cur_uid}; fi; }}\n'
+            f'id() {{ if [ "$2" = shuozi ]; then echo {hermes_uid}; else echo {cur_uid}; fi; }}\n'
             + block
             + "\necho GUARD_PASSED\n"  # only reached when the guard allows through
         )
@@ -102,7 +102,7 @@ def test_root_start_passes() -> None:
 
 
 def test_user_pinned_to_hermes_uid_passes() -> None:
-    """`--user 10000:10000` (the hermes UID itself) is the supported non-root
+    """`--user 10000:10000` (the shuozi UID itself) is the supported non-root
     start from #34648 / #34837 and must NOT be blocked."""
     for text in (_read(STAGE2_HOOK), _read(MAIN_WRAPPER)):
         proc = _run_guard(text, cur_uid=10000, hermes_uid=10000)
@@ -111,7 +111,7 @@ def test_user_pinned_to_hermes_uid_passes() -> None:
 
 
 def test_user_pinned_to_remapped_hermes_uid_passes() -> None:
-    """After a HERMES_UID remap the hermes UID is e.g. 4242; a container pinned
+    """After a SHUOZI_UID remap the shuozi UID is e.g. 4242; a container pinned
     to that same UID must still pass (cur_uid == hermes_uid)."""
     for text in (_read(STAGE2_HOOK), _read(MAIN_WRAPPER)):
         proc = _run_guard(text, cur_uid=4242, hermes_uid=4242)

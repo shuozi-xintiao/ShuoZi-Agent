@@ -694,8 +694,8 @@ class TestMentionPatterns:
         adapter = _make_gating_adapter(
             monkeypatch, extra={"mention_patterns": ["^hermes"]}
         )
-        assert adapter._message_matches_mention_patterns("hermes please help") is True
-        assert adapter._message_matches_mention_patterns("please hermes help") is False
+        assert adapter._message_matches_mention_patterns("shuozi please help") is True
+        assert adapter._message_matches_mention_patterns("please shuozi help") is False
 
     def test_pattern_is_case_insensitive(self, monkeypatch):
         adapter = _make_gating_adapter(
@@ -764,7 +764,7 @@ class TestShouldProcessMessage:
             extra={"require_mention": True, "mention_patterns": ["^hermes"]},
         )
         msg = MagicMock(is_in_at_list=False)
-        assert adapter._should_process_message(msg, "hermes help", is_group=True, chat_id="grp1") is True
+        assert adapter._should_process_message(msg, "shuozi help", is_group=True, chat_id="grp1") is True
 
     def test_group_accepted_when_chat_in_free_response_list(self, monkeypatch):
         adapter = _make_gating_adapter(

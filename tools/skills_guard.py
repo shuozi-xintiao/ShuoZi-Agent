@@ -130,9 +130,9 @@ THREAT_PATTERNS = [
     (r'\$HOME/\.docker|\~/\.docker',
      "docker_dir_access", "high", "exfiltration",
      "references Docker config (may contain registry creds)"),
-    (r'\$HOME/\.hermes/\.env|\~/\.hermes/\.env',
+    (r'\$HOME/\.shuozi/\.env|\~/\.shuozi/\.env',
      "hermes_env_access", "critical", "exfiltration",
-     "directly references Hermes secrets file"),
+     "directly references ShuoZi secrets file"),
     # Match `cat <secrets-file>` (reading credentials) but NOT `cat > <file>`
     # or `cat >> <file>`, which are output redirections that WRITE a file
     # (e.g. a setup doc telling the user to write their own keys into their
@@ -456,9 +456,9 @@ THREAT_PATTERNS = [
     (r'AGENTS\.md|CLAUDE\.md|\.cursorrules|\.clinerules',
      "agent_config_mod", "critical", "persistence",
      "references agent config files (could persist malicious instructions across sessions)"),
-    (r'\.hermes/config\.yaml|\.hermes/SOUL\.md',
+    (r'\.shuozi/config\.yaml|\.shuozi/SOUL\.md',
      "hermes_config_mod", "critical", "persistence",
-     "references Hermes configuration files directly"),
+     "references ShuoZi configuration files directly"),
     (r'\.claude/settings|\.codex/config',
      "other_agent_config", "high", "persistence",
      "references other agent configuration files"),

@@ -204,7 +204,7 @@ def test_auto_mount_replaces_persistent_workspace_bind(monkeypatch, tmp_path):
 
 def test_non_persistent_cleanup_removes_container(monkeypatch):
     """When persist_across_processes=false, cleanup() must docker stop AND
-    docker rm so containers don't leak across hermes processes.
+    docker rm so containers don't leak across shuozi processes.
 
     Updated for issue #20561: the previous implementation used fire-and-forget
     ``subprocess.Popen("... &", shell=True)`` which raced with parent exit;
@@ -268,7 +268,7 @@ def _make_execute_only_env(forward_env=None):
     env._session_id = "test123"
     env._snapshot_path = "/tmp/hermes-snap-test123.sh"
     env._cwd_file = "/tmp/hermes-cwd-test123.txt"
-    env._cwd_marker = "__HERMES_CWD_test123__"
+    env._cwd_marker = "__SHUOZI_CWD_test123__"
     env._snapshot_ready = True
     env._last_sync_time = None
     env._init_env_args = []
@@ -277,7 +277,7 @@ def _make_execute_only_env(forward_env=None):
 
 def test_init_env_args_uses_hermes_dotenv_for_allowlisted_env(monkeypatch):
     """_build_init_env_args picks up forwarded env vars from .env file at init time."""
-    # Use a var that is NOT in _HERMES_PROVIDER_ENV_BLOCKLIST (GITHUB_TOKEN
+    # Use a var that is NOT in _SHUOZI_PROVIDER_ENV_BLOCKLIST (GITHUB_TOKEN
     # is in the copilot provider's api_key_env_vars and gets stripped).
     env = _make_execute_only_env(["DATABASE_URL"])
 
@@ -309,7 +309,7 @@ def test_init_env_args_uses_hermes_dotenv_for_empty_shell_env(monkeypatch):
 
     Regression: the disk fallback used to fire only on `value is None`, so a
     present-but-empty `MY_SECRET=""` skipped it and was forwarded as `-e
-    MY_SECRET=`, clobbering the correct value sitting in ~/.hermes/.env.
+    MY_SECRET=`, clobbering the correct value sitting in ~/.shuozi/.env.
     """
     env = _make_execute_only_env(["MY_SECRET"])
 
@@ -590,10 +590,10 @@ def _labels_in_run_args(run_args):
     }
 
 
-def test_run_command_tags_hermes_agent_label(monkeypatch):
-    """Every container hermes-agent starts must carry the hermes-agent=1 label
+def test_run_command_tags_shuozi_agent_label(monkeypatch):
+    """Every container shuozi-agent starts must carry the shuozi-agent=1 label
     so the orphan reaper (and external operators) can identify them with a
-    single ``docker ps --filter label=hermes-agent=1`` call. Regression test
+    single ``docker ps --filter label=shuozi-agent=1`` call. Regression test
     for issue #20561 — without the label there is no global sweep target."""
     monkeypatch.setattr(docker_env, "find_docker", lambda: "/usr/bin/docker")
     calls = _mock_subprocess_run(monkeypatch)
@@ -601,8 +601,8 @@ def test_run_command_tags_hermes_agent_label(monkeypatch):
     _make_dummy_env(task_id="my-task")
 
     labels = _labels_in_run_args(_run_args_from_calls(calls))
-    assert "hermes-agent=1" in labels, (
-        f"hermes-agent=1 label missing; got labels: {sorted(labels)}"
+    assert "shuozi-agent=1" in labels, (
+        f"shuozi-agent=1 label missing; got labels: {sorted(labels)}"
     )
 
 
@@ -670,7 +670,7 @@ def test_labels_attribute_populated_after_init(monkeypatch):
     env = _make_dummy_env(task_id="abc")
 
     assert env._labels == {
-        "hermes-agent": "1",
+        "shuozi-agent": "1",
         "hermes-task-id": "abc",
         "hermes-profile": "default",
     }
@@ -1349,8 +1349,8 @@ def test_reap_orphan_scopes_to_profile_filter_via_label(monkeypatch):
     assert "label=hermes-profile=research-bot" in flat, (
         f"profile filter not applied to docker ps; got args: {ps_calls[0][0]}"
     )
-    assert "label=hermes-agent=1" in flat, (
-        f"hermes-agent label filter must also be applied; got: {ps_calls[0][0]}"
+    assert "label=shuozi-agent=1" in flat, (
+        f"shuozi-agent label filter must also be applied; got: {ps_calls[0][0]}"
     )
     assert "status=exited" in flat, (
         "must filter to exited containers only — running containers may "
@@ -1498,7 +1498,7 @@ def test_credential_mount_skipped_when_source_is_directory(monkeypatch, tmp_path
 
     # Mock get_credential_file_mounts to return the corrupted entry
     fake_mounts = [
-        {"host_path": str(corrupted_dir), "container_path": "/root/.hermes/google_token.json"},
+        {"host_path": str(corrupted_dir), "container_path": "/root/.shuozi/google_token.json"},
     ]
     monkeypatch.setattr(
         "tools.credential_files.get_credential_file_mounts",
@@ -1538,7 +1538,7 @@ def test_credential_mount_skipped_when_source_missing(monkeypatch, tmp_path, cap
     calls = _mock_subprocess_run(monkeypatch)
 
     fake_mounts = [
-        {"host_path": str(missing_path), "container_path": "/root/.hermes/deleted_token.json"},
+        {"host_path": str(missing_path), "container_path": "/root/.shuozi/deleted_token.json"},
     ]
     monkeypatch.setattr(
         "tools.credential_files.get_credential_file_mounts",
@@ -1576,7 +1576,7 @@ def test_credential_mount_works_when_source_is_valid_file(monkeypatch, tmp_path)
     calls = _mock_subprocess_run(monkeypatch)
 
     fake_mounts = [
-        {"host_path": str(valid_file), "container_path": "/root/.hermes/token.json"},
+        {"host_path": str(valid_file), "container_path": "/root/.shuozi/token.json"},
     ]
     monkeypatch.setattr(
         "tools.credential_files.get_credential_file_mounts",
@@ -1629,7 +1629,7 @@ def test_image_uses_init_entrypoint_detects_s6_init(monkeypatch):
         return subprocess.CompletedProcess(cmd, 0, stdout='["/init"]', stderr="")
 
     monkeypatch.setattr(docker_env.subprocess, "run", _run)
-    assert docker_env._image_uses_init_entrypoint("/usr/bin/docker", "hermes-agent:latest") is True
+    assert docker_env._image_uses_init_entrypoint("/usr/bin/docker", "shuozi-agent:latest") is True
 
 
 def test_image_uses_init_entrypoint_false_for_plain_image(monkeypatch):
@@ -1674,7 +1674,7 @@ def test_s6_image_skips_docker_init_and_mounts_run_exec(monkeypatch):
     monkeypatch.setattr(docker_env, "find_docker", lambda: "/usr/bin/docker")
     calls = _mock_subprocess_run_with_entrypoint(monkeypatch, '["/init"]')
 
-    _make_dummy_env(image="hermes-agent:latest")
+    _make_dummy_env(image="shuozi-agent:latest")
 
     run_calls = [c for c in calls if isinstance(c[0], list) and len(c[0]) >= 2 and c[0][1] == "run"]
     assert run_calls, "docker run should have been called"

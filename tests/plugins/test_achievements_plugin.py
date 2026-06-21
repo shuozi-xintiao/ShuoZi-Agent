@@ -54,7 +54,7 @@ def plugin_api(tmp_path, monkeypatch):
     # swap ``sys.modules['hermes_state']`` with auto-restoration. Without
     # this, a raw ``sys.modules[...] = fake`` assignment would leak the
     # fake into later tests in the same xdist worker — breaking every
-    # test that does ``from hermes_state import SessionDB``.
+    # test that does ``from shuozi_state import SessionDB``.
     module._test_monkeypatch = monkeypatch
     yield module
 
@@ -122,9 +122,9 @@ def _install_fake_session_db(plugin_api, fake_db):
     ``sys.modules['hermes_state']`` swap is auto-restored at test teardown
     and cannot leak into unrelated tests in the same xdist worker.
     """
-    fake_module = type(sys)("hermes_state")
+    fake_module = type(sys)("shuozi_state")
     fake_module.SessionDB = lambda: fake_db
-    plugin_api._test_monkeypatch.setitem(sys.modules, "hermes_state", fake_module)
+    plugin_api._test_monkeypatch.setitem(sys.modules, "shuozi_state", fake_module)
 
 
 def test_scan_sessions_default_scans_all_history_not_first_200(plugin_api):

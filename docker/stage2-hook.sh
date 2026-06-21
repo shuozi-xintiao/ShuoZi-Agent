@@ -17,7 +17,7 @@
 
 set -eu
 
-HERMES_HOME="${HERMES_HOME:-/opt/data}"
+SHUOZI_HOME="${SHUOZI_HOME:-/opt/data}"
 INSTALL_DIR="/opt/hermes"
 
 # Drop to hermes via s6-setuidgid, but skip it when already non-root.
@@ -35,10 +35,10 @@ as_hermes() { [ "$(id -u)" = 0 ] || { "$@"; return; }; s6-setuidgid hermes "$@";
 # arbitrary `--user` UID can't write them — the runtime then fails with EACCES
 # on a bind mount, or hard-crashes on a named volume (Docker initialises the
 # volume from the image as UID 10000, and the non-root start can't even `cd`
-# into $HERMES_HOME). See #34837 for the supervision-tree side of this.
+# into $SHUOZI_HOME). See #34837 for the supervision-tree side of this.
 #
 # The supported way to match host-side ownership is to start as root (the image
-# default) and pass HERMES_UID/HERMES_GID — or the PUID/PGID aliases — which the
+# default) and pass SHUOZI_UID/SHUOZI_GID — or the PUID/PGID aliases — which the
 # remap block below consumes via usermod/groupmod + targeted chown. That gives
 # the exact same outcome (files owned by your host UID) without breaking s6.
 #
@@ -60,7 +60,7 @@ so a pinned --user UID cannot write them — startup will fail.
 To make container-written files match your HOST user, DON'T use --user.
 Start the container as root (the default) and pass your host UID/GID instead:
 
-    docker run -e HERMES_UID=\$(id -u) -e HERMES_GID=\$(id -g) ...
+    docker run -e SHUOZI_UID=\$(id -u) -e SHUOZI_GID=\$(id -g) ...
 
 NAS users (Synology / unRAID / UGOS) can use the PUID/PGID aliases:
 
@@ -73,17 +73,17 @@ EOF
     exit 1
 fi
 
-# --- Bootstrap HERMES_HOME as root ---
+# --- Bootstrap SHUOZI_HOME as root ---
 # Create the directory (and any missing parents) while we still have root
 # privileges so the chown checks below see real metadata and the later
 # `s6-setuidgid hermes mkdir -p` block doesn't EACCES on root-owned
-# ancestors. Without this, custom HERMES_HOME paths whose parents only
-# root can create (e.g. `HERMES_HOME=/home/hermes/.hermes` in a Compose
+# ancestors. Without this, custom SHUOZI_HOME paths whose parents only
+# root can create (e.g. `SHUOZI_HOME=/home/hermes/.hermes` in a Compose
 # file, or any path under a fresh / not pre-populated by the image)
 # fail on first boot with `mkdir: cannot create directory '/...': Permission
 # denied` and the cont-init hook exits non-zero. Idempotent — `mkdir -p`
 # is a no-op if the dir already exists. (#18482, salvages #18488)
-mkdir -p "$HERMES_HOME"
+mkdir -p "$SHUOZI_HOME"
 
 # Numeric UID/GID validation: must be digits only, non-root, 1-65534.
 # NAS hosts such as Unraid commonly use low non-root IDs (99:100).
@@ -95,24 +95,24 @@ validate_uid_gid() {
 }
 
 # --- UID/GID remap ---
-# Accept PUID/PGID as aliases for HERMES_UID/HERMES_GID.  NAS users (UGOS,
+# Accept PUID/PGID as aliases for SHUOZI_UID/SHUOZI_GID.  NAS users (UGOS,
 # Synology, unRAID) expect the LinuxServer.io PUID/PGID convention and
 # bind-mount /opt/data from a host directory owned by their own UID; without
 # this alias those vars are silently ignored and the s6-setuidgid drop to
-# UID 10000 leaves the runtime unable to read the volume.  HERMES_UID/
-# HERMES_GID still win when both are set.  See #15290, salvages #25872.
-HERMES_UID="${HERMES_UID:-${PUID:-}}"
-HERMES_GID="${HERMES_GID:-${PGID:-}}"
+# UID 10000 leaves the runtime unable to read the volume.  SHUOZI_UID/
+# SHUOZI_GID still win when both are set.  See #15290, salvages #25872.
+SHUOZI_UID="${SHUOZI_UID:-${PUID:-}}"
+SHUOZI_GID="${SHUOZI_GID:-${PGID:-}}"
 
-if [ -n "${HERMES_UID:-}" ] && validate_uid_gid "$HERMES_UID" && [ "$HERMES_UID" != "$(id -u hermes)" ]; then
-    echo "[stage2] Changing hermes UID to $HERMES_UID"
-    usermod -u "$HERMES_UID" hermes
+if [ -n "${SHUOZI_UID:-}" ] && validate_uid_gid "$SHUOZI_UID" && [ "$SHUOZI_UID" != "$(id -u hermes)" ]; then
+    echo "[stage2] Changing hermes UID to $SHUOZI_UID"
+    usermod -u "$SHUOZI_UID" hermes
 fi
-if [ -n "${HERMES_GID:-}" ] && validate_uid_gid "$HERMES_GID" && [ "$HERMES_GID" != "$(id -g hermes)" ]; then
-    echo "[stage2] Changing hermes GID to $HERMES_GID"
+if [ -n "${SHUOZI_GID:-}" ] && validate_uid_gid "$SHUOZI_GID" && [ "$SHUOZI_GID" != "$(id -g hermes)" ]; then
+    echo "[stage2] Changing hermes GID to $SHUOZI_GID"
     # -o allows non-unique GID (e.g. macOS GID 20 "staff" may already
     # exist as "dialout" in the Debian-based container image).
-    groupmod -o -g "$HERMES_GID" hermes 2>/dev/null || true
+    groupmod -o -g "$SHUOZI_GID" hermes 2>/dev/null || true
 fi
 
 # --- Docker socket group membership (docker-in-docker / DooD) ---
@@ -172,9 +172,9 @@ for sock in /var/run/docker.sock /run/docker.sock; do
 done
 
 # --- Fix ownership of data volume ---
-# When HERMES_UID is remapped or the top-level $HERMES_HOME isn't owned by
+# When SHUOZI_UID is remapped or the top-level $SHUOZI_HOME isn't owned by
 # the runtime hermes UID, restore ownership to hermes — but ONLY for the
-# directories hermes actually writes to. The full $HERMES_HOME may be a
+# directories hermes actually writes to. The full $SHUOZI_HOME may be a
 # host-mounted bind containing unrelated user files; `chown -R` would
 # silently destroy host ownership of those (see issue #19788).
 #
@@ -182,27 +182,27 @@ done
 # mkdir -p block below seeds. Keep them in sync if the seed list changes.
 actual_hermes_uid=$(id -u hermes)
 needs_chown=false
-if [ "$(stat -c %u "$HERMES_HOME" 2>/dev/null)" != "$actual_hermes_uid" ]; then
+if [ "$(stat -c %u "$SHUOZI_HOME" 2>/dev/null)" != "$actual_hermes_uid" ]; then
     needs_chown=true
 fi
 if [ "$needs_chown" = true ]; then
-    echo "[stage2] Fixing ownership of $HERMES_HOME (targeted) to hermes ($actual_hermes_uid)"
+    echo "[stage2] Fixing ownership of $SHUOZI_HOME (targeted) to hermes ($actual_hermes_uid)"
     # In rootless Podman the container's "root" is mapped to an
     # unprivileged host UID — chown will fail. That's fine: the volume
     # is already owned by the mapped user on the host side.
     #
-    # Top-level $HERMES_HOME: chown the directory itself (not its contents)
+    # Top-level $SHUOZI_HOME: chown the directory itself (not its contents)
     # so hermes can mkdir new subdirs but bind-mounted host files keep
     # their existing ownership.
-    chown hermes:hermes "$HERMES_HOME" 2>/dev/null || \
-        echo "[stage2] Warning: chown $HERMES_HOME failed (rootless container?) — continuing"
+    chown hermes:hermes "$SHUOZI_HOME" 2>/dev/null || \
+        echo "[stage2] Warning: chown $SHUOZI_HOME failed (rootless container?) — continuing"
     # Hermes-owned subdirs: recursive chown is safe here because these are
     # created and managed exclusively by hermes (see the s6-setuidgid mkdir
     # -p block below for the canonical list).
     for sub in cron sessions logs hooks memories skills skins plans workspace home profiles pairing platforms/pairing; do
-        if [ -e "$HERMES_HOME/$sub" ]; then
-            chown -R hermes:hermes "$HERMES_HOME/$sub" 2>/dev/null || \
-                echo "[stage2] Warning: chown $HERMES_HOME/$sub failed (rootless container?) — continuing"
+        if [ -e "$SHUOZI_HOME/$sub" ]; then
+            chown -R hermes:hermes "$SHUOZI_HOME/$sub" 2>/dev/null || \
+                echo "[stage2] Warning: chown $SHUOZI_HOME/$sub failed (rootless container?) — continuing"
         fi
     done
 fi
@@ -213,7 +213,7 @@ fi
 #   - .venv: lazy_deps.py cannot install platform packages (discord.py,
 #     telegram, slack, etc.) with EACCES (#15012, #21100)
 #   - ui-tui: esbuild rebuilds dist/entry.js on every TUI launch (when
-#     the source mtime is newer than dist/ or when HERMES_TUI_FORCE_BUILD
+#     the source mtime is newer than dist/ or when SHUOZI_TUI_FORCE_BUILD
 #     is set) and writes to ui-tui/dist/. Without this chown the new
 #     hermes UID can't write the build output (#28851).
 #   - gateway: Python writes __pycache__ and runtime artifacts beneath the
@@ -224,16 +224,16 @@ fi
 #     that runtime code may walk/update.
 # The set mirrors the build-time `chown -R hermes:hermes` line in the
 # Dockerfile — keep them in sync if the Dockerfile chown set changes.
-# These are under $INSTALL_DIR (not $HERMES_HOME), so the bind-mount
+# These are under $INSTALL_DIR (not $SHUOZI_HOME), so the bind-mount
 # concern doesn't apply — recursive is fine.
 #
-# This MUST be gated independently of the $HERMES_HOME ownership check
+# This MUST be gated independently of the $SHUOZI_HOME ownership check
 # above. `usermod -u <new> hermes` re-chowns the hermes home dir
-# ($HERMES_HOME == /opt/data) to the new UID as a side effect, so after a
-# HERMES_UID/PUID remap `stat $HERMES_HOME` always already matches the new
+# ($SHUOZI_HOME == /opt/data) to the new UID as a side effect, so after a
+# SHUOZI_UID/PUID remap `stat $SHUOZI_HOME` always already matches the new
 # UID and `needs_chown` is false — but the build trees under /opt/hermes
 # are NOT touched by usermod and remain owned by the build-time UID
-# (10000). Gating them on $HERMES_HOME ownership (as #35027 did) silently
+# (10000). Gating them on $SHUOZI_HOME ownership (as #35027 did) silently
 # skipped this chown on the common PUID/NAS path, regressing lazy installs
 # and TUI rebuilds. Probe the build trees directly instead: chown only
 # when the venv is not already owned by the runtime hermes UID. Idempotent
@@ -251,28 +251,28 @@ if [ -n "$venv_owner" ] && [ "$venv_owner" != "$actual_hermes_uid" ]; then
         echo "[stage2] Warning: chown of build trees failed (rootless container?) — continuing"
 fi
 
-# Always reset ownership of $HERMES_HOME/profiles to hermes on every
+# Always reset ownership of $SHUOZI_HOME/profiles to hermes on every
 # boot. Profile dirs and files can land owned by root when commands
 # are invoked via `docker exec <container> hermes …` (which defaults
 # to root unless `-u` is passed), and that breaks the cont-init
 # reconciler (02-reconcile-profiles) which runs as hermes and walks
 # the profiles dir. Idempotent; skipped on rootless containers where
 # chown would fail.
-if [ -d "$HERMES_HOME/profiles" ]; then
-    chown -R hermes:hermes "$HERMES_HOME/profiles" 2>/dev/null || true
+if [ -d "$SHUOZI_HOME/profiles" ]; then
+    chown -R hermes:hermes "$SHUOZI_HOME/profiles" 2>/dev/null || true
 fi
 
-# Always reset ownership of $HERMES_HOME/cron on every boot for the same
+# Always reset ownership of $SHUOZI_HOME/cron on every boot for the same
 # docker-exec/root-write reason as profiles/. The cron scheduler state
 # (jobs.json) must stay readable by the unprivileged hermes runtime even
 # after root-context maintenance commands or scheduler writes.
-if [ -d "$HERMES_HOME/cron" ]; then
-    chown -R hermes:hermes "$HERMES_HOME/cron" 2>/dev/null || true
+if [ -d "$SHUOZI_HOME/cron" ]; then
+    chown -R hermes:hermes "$SHUOZI_HOME/cron" 2>/dev/null || true
 fi
 
 # Reset ownership of hermes-owned top-level state files on every boot.
 # The targeted data-volume chown above only covers hermes-owned
-# *subdirectories*; loose state files living directly under $HERMES_HOME
+# *subdirectories*; loose state files living directly under $SHUOZI_HOME
 # are missed. When those files are created or rewritten by
 # `docker exec <container> hermes …` (root unless `-u` is passed) they
 # land root-owned, and the unprivileged hermes runtime then hits
@@ -280,7 +280,7 @@ fi
 # auth.json), producing a gateway restart loop.
 #
 # We use an explicit allowlist rather than a blanket `find -user root`
-# sweep so host-owned files in a bind-mounted $HERMES_HOME are never
+# sweep so host-owned files in a bind-mounted $SHUOZI_HOME are never
 # touched — same targeted-ownership contract as the subdir chown above
 # (issue #19788, PR #19795). The list mirrors the top-level *file*
 # entries of hermes_cli.profile_distribution.USER_OWNED_EXCLUDE plus the
@@ -288,21 +288,21 @@ fi
 for f in \
     auth.json auth.lock .env \
     state.db state.db-shm state.db-wal \
-    hermes_state.db \
+    shuozi_state.db \
     response_store.db response_store.db-shm response_store.db-wal \
     gateway.pid gateway.lock gateway_state.json processes.json \
     active_profile; do
-    if [ -e "$HERMES_HOME/$f" ]; then
-        chown hermes:hermes "$HERMES_HOME/$f" 2>/dev/null || true
+    if [ -e "$SHUOZI_HOME/$f" ]; then
+        chown hermes:hermes "$SHUOZI_HOME/$f" 2>/dev/null || true
     fi
 done
 
 # --- config.yaml permissions ---
 # Ensure config.yaml is readable by the hermes runtime user even if it
 # was edited on the host after initial ownership setup.
-if [ -f "$HERMES_HOME/config.yaml" ]; then
-    chown hermes:hermes "$HERMES_HOME/config.yaml" 2>/dev/null || true
-    chmod 640 "$HERMES_HOME/config.yaml" 2>/dev/null || true
+if [ -f "$SHUOZI_HOME/config.yaml" ]; then
+    chown hermes:hermes "$SHUOZI_HOME/config.yaml" 2>/dev/null || true
+    chmod 640 "$SHUOZI_HOME/config.yaml" 2>/dev/null || true
 fi
 
 # --- Seed directory structure as hermes user ---
@@ -310,36 +310,36 @@ fi
 # under rootless Podman where chown back to root would fail).
 #
 # Use direct `mkdir -p` invocation (no `sh -c "..."` wrapper) so the
-# shell isn't a second interpreter — defends against $HERMES_HOME values
+# shell isn't a second interpreter — defends against $SHUOZI_HOME values
 # containing shell metacharacters. PR #30136 review item O2.
 as_hermes mkdir -p \
-    "$HERMES_HOME/cron" \
-    "$HERMES_HOME/sessions" \
-    "$HERMES_HOME/logs" \
-    "$HERMES_HOME/hooks" \
-    "$HERMES_HOME/memories" \
-    "$HERMES_HOME/skills" \
-    "$HERMES_HOME/skins" \
-    "$HERMES_HOME/plans" \
-    "$HERMES_HOME/workspace" \
-    "$HERMES_HOME/home" \
-    "$HERMES_HOME/pairing" \
-    "$HERMES_HOME/platforms/pairing"
+    "$SHUOZI_HOME/cron" \
+    "$SHUOZI_HOME/sessions" \
+    "$SHUOZI_HOME/logs" \
+    "$SHUOZI_HOME/hooks" \
+    "$SHUOZI_HOME/memories" \
+    "$SHUOZI_HOME/skills" \
+    "$SHUOZI_HOME/skins" \
+    "$SHUOZI_HOME/plans" \
+    "$SHUOZI_HOME/workspace" \
+    "$SHUOZI_HOME/home" \
+    "$SHUOZI_HOME/pairing" \
+    "$SHUOZI_HOME/platforms/pairing"
 
 # --- Install-method stamp (read by detect_install_method() in hermes status) ---
 # Preserved from the tini-era entrypoint (PR #27843). Must be written as
 # the hermes user so ownership matches the file's documented owner.
 # tee is invoked directly via s6-setuidgid (no `sh -c` wrapper) for the
 # same shell-metacharacter safety described above.
-printf 'docker\n' | as_hermes tee "$HERMES_HOME/.install_method" >/dev/null \
+printf 'docker\n' | as_hermes tee "$SHUOZI_HOME/.install_method" >/dev/null \
     || true
 
 # --- Seed config files (only on first boot) ---
 seed_one() {
     dest=$1
     src=$2
-    if [ ! -f "$HERMES_HOME/$dest" ] && [ -f "$INSTALL_DIR/$src" ]; then
-        as_hermes cp "$INSTALL_DIR/$src" "$HERMES_HOME/$dest"
+    if [ ! -f "$SHUOZI_HOME/$dest" ] && [ -f "$INSTALL_DIR/$src" ]; then
+        as_hermes cp "$INSTALL_DIR/$src" "$SHUOZI_HOME/$dest"
     fi
 }
 seed_one ".env" ".env.example"
@@ -349,18 +349,18 @@ seed_one "SOUL.md" "docker/SOUL.md"
 # .env holds API keys and secrets — restrict to owner-only access. Applied
 # unconditionally (not only on first-seed) so a host-mounted .env that was
 # created with a permissive umask gets tightened on every container start.
-if [ -f "$HERMES_HOME/.env" ]; then
-    chown hermes:hermes "$HERMES_HOME/.env" 2>/dev/null || true
-    chmod 600 "$HERMES_HOME/.env" 2>/dev/null || true
+if [ -f "$SHUOZI_HOME/.env" ]; then
+    chown hermes:hermes "$SHUOZI_HOME/.env" 2>/dev/null || true
+    chmod 600 "$SHUOZI_HOME/.env" 2>/dev/null || true
 fi
 
 # --- Migrate persisted config schema ---
 # Docker image upgrades replace the code under $INSTALL_DIR but preserve
-# $HERMES_HOME on the mounted volume. Run the same safe, non-interactive
-# config-schema migrations that `hermes update` runs for non-Docker installs,
+# $SHUOZI_HOME on the mounted volume. Run the same safe, non-interactive
+# config-schema migrations that `shuozi update` runs for non-Docker installs,
 # after first-boot seeding and before supervised gateway services start.
-# Set HERMES_SKIP_CONFIG_MIGRATION=1 for controlled/manual migrations.
-if [ -f "$HERMES_HOME/config.yaml" ]; then
+# Set SHUOZI_SKIP_CONFIG_MIGRATION=1 for controlled/manual migrations.
+if [ -f "$SHUOZI_HOME/config.yaml" ]; then
     s6-setuidgid hermes "$INSTALL_DIR/.venv/bin/python" "$INSTALL_DIR/scripts/docker_config_migrate.py" \
         || echo "[stage2] Warning: docker_config_migrate.py failed; continuing"
 fi
@@ -368,10 +368,10 @@ fi
 # auth.json: bootstrap from env on first boot only. Same semantics as the
 # pre-s6 entrypoint — the [ ! -f ] guard is critical to avoid clobbering
 # rotated refresh tokens on container restart.
-if [ ! -f "$HERMES_HOME/auth.json" ] && [ -n "${HERMES_AUTH_JSON_BOOTSTRAP:-}" ]; then
-    printf '%s' "$HERMES_AUTH_JSON_BOOTSTRAP" > "$HERMES_HOME/auth.json"
-    chown hermes:hermes "$HERMES_HOME/auth.json" 2>/dev/null || true
-    chmod 600 "$HERMES_HOME/auth.json"
+if [ ! -f "$SHUOZI_HOME/auth.json" ] && [ -n "${SHUOZI_AUTH_JSON_BOOTSTRAP:-}" ]; then
+    printf '%s' "$SHUOZI_AUTH_JSON_BOOTSTRAP" > "$SHUOZI_HOME/auth.json"
+    chown hermes:hermes "$SHUOZI_HOME/auth.json" 2>/dev/null || true
+    chmod 600 "$SHUOZI_HOME/auth.json"
 fi
 
 # gateway_state.json: declare the gateway's INITIAL supervised state on a
@@ -384,14 +384,14 @@ fi
 # freshly-provisioned container comes up with the gateway down until
 # someone starts it (e.g. from the dashboard). An orchestrator that
 # provisions a fresh volume and wants the gateway running from first boot
-# can set HERMES_GATEWAY_BOOTSTRAP_STATE=running; we seed the state file
+# can set SHUOZI_GATEWAY_BOOTSTRAP_STATE=running; we seed the state file
 # here, BEFORE 02-reconcile-profiles runs (cont-init.d scripts run in
 # lexicographic order), so the reconciler sees prior_state=running and
 # brings the supervised slot up on the very first boot.
 #
 # This is a generic container contract, not specific to any host: it seeds
 # the SAME gateway_state.json the reconciler already consults, exactly as
-# HERMES_AUTH_JSON_BOOTSTRAP seeds auth.json. The [ ! -f ] guard is the
+# SHUOZI_AUTH_JSON_BOOTSTRAP seeds auth.json. The [ ! -f ] guard is the
 # load-bearing part — on every subsequent boot the persisted state wins,
 # so a gateway the operator deliberately stopped stays stopped across
 # restarts and we never clobber real runtime state.
@@ -399,11 +399,11 @@ fi
 # Only a literal "running" is honoured (the sole value in the reconciler's
 # _AUTOSTART_STATES); any other value is ignored so a typo can't write a
 # bogus state the reconciler would treat as "no prior state" anyway.
-if [ ! -f "$HERMES_HOME/gateway_state.json" ] && \
-        [ "${HERMES_GATEWAY_BOOTSTRAP_STATE:-}" = "running" ]; then
-    printf '{"gateway_state":"running"}\n' > "$HERMES_HOME/gateway_state.json"
-    chown hermes:hermes "$HERMES_HOME/gateway_state.json" 2>/dev/null || true
-    chmod 644 "$HERMES_HOME/gateway_state.json"
+if [ ! -f "$SHUOZI_HOME/gateway_state.json" ] && \
+        [ "${SHUOZI_GATEWAY_BOOTSTRAP_STATE:-}" = "running" ]; then
+    printf '{"gateway_state":"running"}\n' > "$SHUOZI_HOME/gateway_state.json"
+    chown hermes:hermes "$SHUOZI_HOME/gateway_state.json" 2>/dev/null || true
+    chmod 644 "$SHUOZI_HOME/gateway_state.json"
 fi
 
 # --- Sync bundled skills ---

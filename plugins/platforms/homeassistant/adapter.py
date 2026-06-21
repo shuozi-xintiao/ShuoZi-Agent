@@ -539,7 +539,7 @@ def _is_connected(config) -> bool:
     vars.  Matches what the legacy connected-platforms check did before
     this migration.
     """
-    import hermes_cli.gateway as gateway_mod
+    import shuozi_cli.gateway as gateway_mod
     return bool((gateway_mod.get_env_value("HASS_TOKEN") or "").strip())
 
 

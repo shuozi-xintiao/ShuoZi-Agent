@@ -1,6 +1,6 @@
 """Tests for the curator per-run report writer (run.json + REPORT.md).
 
-Reports live under ``~/.hermes/logs/curator/{YYYYMMDD-HHMMSS}/`` alongside
+Reports live under ``~/.shuozi/logs/curator/{YYYYMMDD-HHMMSS}/`` alongside
 the standard log dir, not inside the user's ``skills/`` data directory.
 """
 
@@ -15,16 +15,16 @@ import pytest
 
 @pytest.fixture
 def curator_env(tmp_path, monkeypatch):
-    """Isolated HERMES_HOME with a skills/ dir + reset curator module state."""
+    """Isolated SHUOZI_HOME with a skills/ dir + reset curator module state."""
     home = tmp_path / ".hermes"
     home.mkdir()
     (home / "skills").mkdir()
     (home / "logs").mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("SHUOZI_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
-    import hermes_constants
+    import shuozi_constants
     importlib.reload(hermes_constants)
     from agent import curator
     importlib.reload(curator)
@@ -294,7 +294,7 @@ def curator_env_with_cron(curator_env, monkeypatch):
     import importlib
     import cron.jobs as jobs_mod
     importlib.reload(jobs_mod)
-    monkeypatch.setattr(jobs_mod, "HERMES_DIR", home)
+    monkeypatch.setattr(jobs_mod, "SHUOZI_DIR", home)
     monkeypatch.setattr(jobs_mod, "CRON_DIR", home / "cron")
     monkeypatch.setattr(jobs_mod, "JOBS_FILE", home / "cron" / "jobs.json")
     monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", home / "cron" / "output")
