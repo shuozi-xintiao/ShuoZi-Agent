@@ -3,15 +3,15 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Hermes Agent',
-  tagline: 'The self-improving AI agent',
+  title: '硕兹 Agent — ShuoZi Agent',
+  tagline: 'ShuoZi OS 原生 AI 智能层',
   favicon: 'img/favicon.ico',
 
-  url: 'https://hermes-agent.nousresearch.com',
-  baseUrl: '/docs/',
+  url: 'https://shuozi-xintiao.github.io',
+  baseUrl: '/ShuoZi-Agent/',
 
-  organizationName: 'NousResearch',
-  projectName: 'hermes-agent',
+  organizationName: 'shuozi-xintiao',
+  projectName: 'ShuoZi-Agent',
 
   onBrokenLinks: 'warn',
 
